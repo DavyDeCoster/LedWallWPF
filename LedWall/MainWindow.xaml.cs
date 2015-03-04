@@ -24,5 +24,10 @@ namespace LedWall
         {
             InitializeComponent();
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            Ledwall.ReadPixels("lol");
+        }
     }
 }

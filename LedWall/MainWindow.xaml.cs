@@ -29,7 +29,7 @@ namespace LedWall
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Ledwall.readVideo();
+            Ledwall.readVideo(_path + "Video\\red.mp4");
         }
     }
 }

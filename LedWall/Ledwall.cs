@@ -14,17 +14,12 @@ namespace LedWall
 {
     class Ledwall
     {
-        static SerialPort port;
         static sbyte[] data = new sbyte[107 * 48 * 3 + 3];
         static float gamma = 1.7F;
         static int[] gammatable = new int[256];
 
         public static void ReadImage(string path)
         {
-            String[] Coms = SerialPort.GetPortNames();
-            port = new SerialPort();
-            port.PortName = Coms[0];
-
             GenerateGammaTable();
 
             Bitmap bmOriginal = new Bitmap(path);
@@ -32,9 +27,6 @@ namespace LedWall
 
             ReadPixelsFromImage(bm);
             AddIntroData();
-
-            port.Open();
-
         }
 
         private static void AddIntroData()
@@ -112,7 +104,7 @@ namespace LedWall
 
         public static void readVideo(string path)
         {
-            FileVideoSource fvs = new FileVideoSource(_path + "Video\\red.mp4");
+            FileVideoSource fvs = new FileVideoSource(path);
 
             fvs.NewFrame += fvs_NewFrame;
 

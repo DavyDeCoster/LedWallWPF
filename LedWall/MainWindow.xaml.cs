@@ -20,6 +20,8 @@ namespace LedWall
     /// </summary>
     public partial class MainWindow : Window
     {
+        static string _path = AppDomain.CurrentDomain.BaseDirectory;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -27,7 +29,7 @@ namespace LedWall
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Ledwall.ReadPixels("lol");
+            Ledwall.readVideo();
         }
     }
 }

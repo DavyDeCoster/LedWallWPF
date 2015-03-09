@@ -15,21 +15,33 @@ namespace LedWall
     class Ledwall
     {
         static sbyte[] data = new sbyte[107 * 48 * 3 + 3];
-        static float gamma = 1.7F;
-        static int[] gammatable = new int[256];
 
-        public static void ReadImage(string path)
+        private int[] gammatable { get; set; }
+        private float gamma { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+
+        public Ledwall(int width, int height)
+        {
+            this.Height = height;
+            this.Width = width;
+            this.gammatable = new int[256];
+            GenerateGammaTable();
+        }
+
+        public void ReadImage(string path)
         {
             GenerateGammaTable();
 
             Bitmap bmOriginal = new Bitmap(path);
-            Bitmap bm = new Bitmap(bmOriginal, 107, 48);
+            Bitmap bm = new Bitmap(bmOriginal, Width, Height);
 
             ReadPixelsFromImage(bm);
             AddIntroData();
+            
         }
 
-        private static void AddIntroData()
+        private void AddIntroData()
         {
             data[0] = (sbyte)System.Text.Encoding.ASCII.GetBytes("*")[0];
             int usec = (int)((1000000.0 / 25) * 0.75);
@@ -37,23 +49,23 @@ namespace LedWall
             data[2] = (sbyte)(usec >> 8); // at 75% of the frame time
         }
 
-        private static void ReadPixelsFromImage(Bitmap bm)
+        private void ReadPixelsFromImage(Bitmap bm)
         {
             Color[] pixel = new Color[8];
             int[] editedPixels = new int[8];
-            int x, y, xbegin, xend, xinc, mask, offset = 3, linesPerPin = 3;
+            int x, y, xbegin, xend, xinc, mask, offset = 3, linesPerPin = Height/8;
 
             for (y = 0; y < linesPerPin; y++)
             {
                 if ((y & 1) == (0))
                 {
                     xbegin = 0;
-                    xend = 107;
+                    xend = Width;
                     xinc = 1;
                 }
                 else
                 {
-                    xbegin = 106;
+                    xbegin = Width-1;
                     xend = -1;
                     xinc = -1;
                 }
@@ -61,8 +73,8 @@ namespace LedWall
                 {
                     for (int i = 0; i < 8; i++)
                     {
-                        pixel[i] = bm.GetPixel(x, y * linesPerPin);
-                        editedPixels[i] = colorWiring(pixel[i], gammatable);
+                        pixel[i] = bm.GetPixel(x, y + (linesPerPin*i));
+                        editedPixels[i] = colorWiring(pixel[i]);
                     }
 
                     for (mask = 0x800000; mask != 0; mask >>= 1)
@@ -81,7 +93,7 @@ namespace LedWall
             }
         }
 
-        private static void GenerateGammaTable()
+        private void GenerateGammaTable()
         {
             for (int i = 0; i < 256; i++)
             {
@@ -89,7 +101,7 @@ namespace LedWall
             }
         }
 
-        private static int colorWiring(Color color, int[] gammatable)
+        private int colorWiring(Color color)
         {
             int red = color.R;
             int green = color.G;
@@ -102,7 +114,7 @@ namespace LedWall
             return ((green << 16) | (red << 8) | (blue));
         }
 
-        public static void readVideo(string path)
+        public void readVideo(string path)
         {
             FileVideoSource fvs = new FileVideoSource(path);
 
@@ -111,9 +123,9 @@ namespace LedWall
             fvs.Start();
         }
 
-        static void fvs_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
+        private void fvs_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
         {
-            Bitmap frame = new Bitmap(eventArgs.Frame, 107, 48);
+            Bitmap frame = new Bitmap(eventArgs.Frame, Width, Height);
             ReadPixelsFromImage(frame);
             AddIntroData();
         }

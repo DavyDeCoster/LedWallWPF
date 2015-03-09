@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,7 +30,18 @@ namespace LedWall
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Ledwall.readVideo(_path + "Video\\red.mp4");
+            string[] sp = SerialPort.GetPortNames();
+
+            SerialWriter[] Ports = SerialWriter.InitializeArray<SerialWriter>(sp.Length);
+
+            int i = 0;
+            foreach (string s in sp)
+            {
+                SerialWriter sw = new SerialWriter(s);
+                Ports[i] = sw;
+                i++;
+            }
+            Ledwall ld = new Ledwall(Ports[0].LedWidth, Ports[0].LedHeight);
         }
     }
 }

@@ -21,6 +21,7 @@ namespace LedWall
         public int Width { get; set; }
         public int Height { get; set; }
         public SerialWriter[] Ports { get; set; }
+        public bool Available { get; set; }
 
         public Ledwall(int width, int height, SerialWriter[] Ports)
         {
@@ -84,7 +85,7 @@ namespace LedWall
         {
             Color[] pixel = new Color[8];
             int[] editedPixels = new int[8];
-            int x, y, xbegin, xend, xinc, mask, offset = 3, linesPerPin = Height/8;
+            int x, y, xbegin, xend, xinc, mask, offset = 3, linesPerPin = bm.Height/8;
 
             for (y = 0; y < linesPerPin; y++)
             {
@@ -173,7 +174,6 @@ namespace LedWall
                 Thread SendThread = new Thread(new ThreadStart(Ports[i].SendData));
                 SendThread.Start();
                 i++;
-
             }
         }
 

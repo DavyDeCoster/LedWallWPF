@@ -56,10 +56,10 @@ namespace LedWall
             LedWidth = Convert.ToInt32(setting[0]);
             LedHeight = Convert.ToInt32(setting[1]);
             LedLayout = Convert.ToInt32(setting[2]);
-            XOffset = Convert.ToInt32(setting[5]);
-            YOffset = Convert.ToInt32(setting[6]);
-            WriterWidth = Convert.ToInt32(setting[7]);
-            WriterHeight = Convert.ToInt32(setting[8]);
+            XOffset = LedWidth*(Convert.ToInt32(setting[5])/100);
+            YOffset = LedHeight*(Convert.ToInt32(setting[6])/100);
+            WriterWidth = LedWidth*(Convert.ToInt32(setting[7])/100);
+            WriterHeight = LedHeight*(Convert.ToInt32(setting[8])/100);
         }
 
         public void SendData(sbyte[] data)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace LedWall
 {
@@ -42,7 +44,7 @@ namespace LedWall
                 i++;
             }
             Ledwall ld = new Ledwall(Ports[0].LedWidth, Ports[0].LedHeight, Ports);
-            ld.readVideo(_path + "Video//red.mp4");
+            ld.readVideo(_path + "Video//test.mp4");
         }
     }
 }

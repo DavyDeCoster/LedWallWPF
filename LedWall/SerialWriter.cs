@@ -79,8 +79,6 @@ namespace LedWall
             byte[] uData = new byte[data.Length];
             Buffer.BlockCopy(data, 0, uData, 0, data.Length);
             Port.Write(uData, 0, uData.Length);
-
-            Console.WriteLine("send");
         }
 
         private void PortChecker()

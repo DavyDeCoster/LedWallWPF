@@ -40,12 +40,7 @@ namespace LedWall
 
             Bitmap[] cropped = cropImagesWithSetting(bm);
 
-            foreach (Bitmap b in cropped)
-            {
-                DefineData(b);
-                ReadPixelsFromImage(b);
-                AddIntroData();
-            }
+            SendProtocol(cropped);
         }
 
         private void DefineData(Bitmap b)
@@ -66,12 +61,23 @@ namespace LedWall
             return cropped;
         }
 
-        private void AddIntroData()
+        private void AddIntroData(Boolean master)
         {
-            data[0] = (sbyte)System.Text.Encoding.ASCII.GetBytes("*")[0];
-            int usec = (int)((1000000.0 / 25) * 0.75);
-            data[1] = (sbyte)(usec);   // request the frame sync pulse
-            data[2] = (sbyte)(usec >> 8); // at 75% of the frame time
+            if (master)
+            {
+                data[0] = (sbyte)System.Text.Encoding.ASCII.GetBytes("*")[0];
+                int usec = (int)((1000000.0 / 25) * 0.75);
+                data[1] = (sbyte)(usec);   // request the frame sync pulse
+                data[2] = (sbyte)(usec >> 8); // at 75% of the frame time
+                return;
+            }
+            else
+            {
+                data[0] = (sbyte)System.Text.Encoding.ASCII.GetBytes("%")[0];
+                data[1] = 0;   // request the frame sync pulse
+                data[2] = 0; // at 75% of the frame time
+                return;
+            }
         }
 
         private void ReadPixelsFromImage(Bitmap bm)
@@ -142,9 +148,7 @@ namespace LedWall
         public void readVideo(string path)
         {
             FileVideoSource fvs = new FileVideoSource(path);
-
             fvs.NewFrame += fvs_NewFrame;
-
             fvs.Start();
         }
 
@@ -152,18 +156,24 @@ namespace LedWall
         {
             Bitmap frame = new Bitmap(eventArgs.Frame, Width, Height);
             Bitmap[] cropped = cropImagesWithSetting(frame);
+            SendProtocol(cropped);
+        }
 
+        private void SendProtocol(Bitmap[] cropped)
+        {
             int i = 0;
+            bool master = true;
             foreach (Bitmap bm in cropped)
             {
                 DefineData(bm);
                 ReadPixelsFromImage(bm);
-                AddIntroData();
+                AddIntroData(master);
+                master = false;
                 Ports[i].data = data;
                 Thread SendThread = new Thread(new ThreadStart(Ports[i].SendData));
                 SendThread.Start();
                 i++;
-                
+
             }
         }
 

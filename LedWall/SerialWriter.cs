@@ -17,6 +17,7 @@ namespace LedWall
         public int WriterHeight { get; set; }
         public int WriterWidth { get; set; }
         public int LedLayout { get; set; }
+        public sbyte[] data { get; set; }
         
         public SerialWriter(string com)
 	    {
@@ -69,6 +70,17 @@ namespace LedWall
             Buffer.BlockCopy(data, 0, uData, 0, data.Length);
 
             Port.Write(uData, 0, uData.Length);
+        }
+
+        public void SendData()
+        {
+            PortChecker();
+
+            byte[] uData = new byte[data.Length];
+            Buffer.BlockCopy(data, 0, uData, 0, data.Length);
+            Port.Write(uData, 0, uData.Length);
+
+            Console.WriteLine("send");
         }
 
         private void PortChecker()

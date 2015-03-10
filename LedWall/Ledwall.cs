@@ -14,17 +14,19 @@ namespace LedWall
 {
     class Ledwall
     {
-        static sbyte[] data = new sbyte[107 * 48 * 3 + 3];
+        static sbyte[] data;
 
         private int[] gammatable { get; set; }
         private float gamma { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+        public SerialWriter[] Ports { get; set; }
 
-        public Ledwall(int width, int height)
+        public Ledwall(int width, int height, SerialWriter[] Ports)
         {
             this.Height = height;
             this.Width = width;
+            this.Ports = Ports;
             this.gammatable = new int[256];
             GenerateGammaTable();
         }
@@ -36,9 +38,32 @@ namespace LedWall
             Bitmap bmOriginal = new Bitmap(path);
             Bitmap bm = new Bitmap(bmOriginal, Width, Height);
 
-            ReadPixelsFromImage(bm);
-            AddIntroData();
-            
+            Bitmap[] cropped = cropImagesWithSetting(bm);
+
+            foreach (Bitmap b in cropped)
+            {
+                DefineData(b);
+                ReadPixelsFromImage(b);
+                AddIntroData();
+            }
+        }
+
+        private void DefineData(Bitmap b)
+        {
+                data = new sbyte[b.Height * b.Width * 3 + 3];
+        }
+
+        private Bitmap[] cropImagesWithSetting(Bitmap bm)
+        {
+            Bitmap[] cropped = new Bitmap[Ports.Length];
+            int i = 0;
+            foreach (SerialWriter s in Ports)
+            {
+                Rectangle cropArea = new Rectangle(s.XOffset, s.YOffset, s.WriterWidth, s.WriterHeight);
+                cropped[i] = (Bitmap)cropImage(bm, cropArea);
+                i++;
+            }
+            return cropped;
         }
 
         private void AddIntroData()
@@ -126,8 +151,54 @@ namespace LedWall
         private void fvs_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
         {
             Bitmap frame = new Bitmap(eventArgs.Frame, Width, Height);
-            ReadPixelsFromImage(frame);
-            AddIntroData();
+            Bitmap[] cropped = cropImagesWithSetting(frame);
+
+            int i = 0;
+            foreach (Bitmap bm in cropped)
+            {
+                DefineData(bm);
+                ReadPixelsFromImage(bm);
+                AddIntroData();
+                Ports[i].data = data;
+                Thread SendThread = new Thread(new ThreadStart(Ports[i].SendData));
+                SendThread.Start();
+                i++;
+                
+            }
+        }
+
+        private Image cropImage(Image img, Rectangle cropArea)
+        {
+            Bitmap bmpImage = new Bitmap(img);
+            return bmpImage.Clone(cropArea, bmpImage.PixelFormat);
+        }
+
+        private double percentageFloat(int percent)
+        {
+            if (percent == 33) return 1.0 / 3.0;
+            if (percent == 17) return 1.0 / 6.0;
+            if (percent == 14) return 1.0 / 7.0;
+            if (percent == 13) return 1.0 / 8.0;
+            if (percent == 11) return 1.0 / 9.0;
+            if (percent == 9) return 1.0 / 11.0;
+            if (percent == 8) return 1.0 / 12.0;
+            return (double)percent / 100.0;
+        }
+
+        // scale a number by a percentage, from 0 to 100
+        private int percentage(int num, int percent)
+        {
+            double mult = percentageFloat(percent);
+            double output = num * mult;
+            return (int)output;
+        }
+
+        // scale a number by the inverse of a percentage, from 0 to 100
+        private int percentageInverse(int num, int percent)
+        {
+            double div = percentageFloat(percent);
+            double output = num / div;
+            return (int)output;
         }
     }
 }

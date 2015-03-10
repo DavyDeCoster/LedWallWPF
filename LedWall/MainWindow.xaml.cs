@@ -41,7 +41,8 @@ namespace LedWall
                 Ports[i] = sw;
                 i++;
             }
-            Ledwall ld = new Ledwall(Ports[0].LedWidth, Ports[0].LedHeight);
+            Ledwall ld = new Ledwall(Ports[0].LedWidth, Ports[0].LedHeight, Ports);
+            ld.readVideo(_path + "Video//red.mp4");
         }
     }
 }

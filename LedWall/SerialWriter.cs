@@ -12,10 +12,10 @@ namespace LedWall
         public SerialPort Port { get; set; }
         public int LedHeight { get; set; }
         public int LedWidth { get; set; }
-        public int XOffset { get; set; }
-        public int YOffset { get; set; }
-        public int WriterHeight { get; set; }
-        public int WriterWidth { get; set; }
+        public double XOffset { get; set; }
+        public double YOffset { get; set; }
+        public double WriterHeight { get; set; }
+        public double WriterWidth { get; set; }
         public int LedLayout { get; set; }
         public sbyte[] data { get; set; }
         
@@ -56,10 +56,10 @@ namespace LedWall
             LedWidth = Convert.ToInt32(setting[0]);
             LedHeight = Convert.ToInt32(setting[1]);
             LedLayout = Convert.ToInt32(setting[2]);
-            XOffset = LedWidth*(Convert.ToInt32(setting[5])/100);
-            YOffset = LedHeight*(Convert.ToInt32(setting[6])/100);
-            WriterWidth = LedWidth*(Convert.ToInt32(setting[7])/100);
-            WriterHeight = LedHeight*(Convert.ToInt32(setting[8])/100);
+            XOffset = Convert.ToDouble(setting[5])/100;
+            YOffset = Convert.ToDouble(setting[6])/100;
+            WriterWidth = Convert.ToDouble(setting[7])/100;
+            WriterHeight = Convert.ToDouble(setting[8])/100;
         }
 
         public void SendData(sbyte[] data)
@@ -87,6 +87,11 @@ namespace LedWall
             {
                 Port.Open();
             }
+        }
+
+        public override string ToString()
+        {
+            return "Width: " + this.LedWidth + " Height: " + LedHeight + " Offsets: X :" + XOffset + " Y: "+YOffset + "WriterWidth: "+ WriterWidth + "WriterHeight: "+ WriterHeight;
         }
     }
 }

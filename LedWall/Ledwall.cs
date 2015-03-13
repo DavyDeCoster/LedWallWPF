@@ -9,10 +9,12 @@ using System.Threading;
 using Microsoft.Win32;
 using System.IO;
 using AForge.Video.DirectShow;
+using System.Windows.Media.Imaging;
+using System.ComponentModel;
 
 namespace LedWall
 {
-    class Ledwall
+    class Ledwall:INotifyPropertyChanged
     {
         static sbyte[] data;
 
@@ -23,25 +25,59 @@ namespace LedWall
         public SerialWriter[] Ports { get; set; }
         public bool Available { get; set; }
 
+        private System.Windows.Media.ImageSource _preview;
+
+        public System.Windows.Media.ImageSource Preview
+        {
+            get { 
+                if(_preview == null)
+                {
+                    Bitmap bm = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Images//red.jpg");
+                    IntPtr hBitmap = bm.GetHbitmap();
+                    System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
+                    return WpfBitmap;
+                }
+                return _preview; 
+            }
+            set { _preview = value;
+            OnPropertyChanged("Preview");
+            }
+        }
+        
+
         public Ledwall(int width, int height, SerialWriter[] Ports)
         {
             this.Height = height;
             this.Width = width;
             this.Ports = Ports;
             this.gammatable = new int[256];
+            this.gamma = 1.7F;
             GenerateGammaTable();
+        }
+
+        public Ledwall()
+        {
+
         }
 
         public void ReadImage(string path)
         {
-            GenerateGammaTable();
-
             Bitmap bmOriginal = new Bitmap(path);
             Bitmap bm = new Bitmap(bmOriginal, Width, Height);
+
+            setPreview(bm);
 
             Bitmap[] cropped = cropImagesWithSetting(bm);
 
             SendProtocol(cropped);
+        }
+
+        private void setPreview(Bitmap bm)
+        {
+            IntPtr hBitmap = bm.GetHbitmap();
+            System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            Preview = WpfBitmap;
         }
 
         private void DefineData(Bitmap b)
@@ -55,9 +91,14 @@ namespace LedWall
             int i = 0;
             foreach (SerialWriter s in Ports)
             {
-                Rectangle cropArea = new Rectangle(s.XOffset, s.YOffset, s.WriterWidth, s.WriterHeight);
-                cropped[i] = (Bitmap)cropImage(bm, cropArea);
+                var img = bm;
+                var rect = new Rectangle(new Point(0, 0), img.Size);
+                var cloned = new Bitmap(img).Clone(rect, img.PixelFormat);
+                var bitmap = new Bitmap(cloned, new Size(s.LedWidth, s.LedHeight));
+
+                cropped[i] = bitmap;
                 i++;
+                cloned.Dispose();
             }
             return cropped;
         }
@@ -156,6 +197,9 @@ namespace LedWall
         private void fvs_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
         {
             Bitmap frame = new Bitmap(eventArgs.Frame, Width, Height);
+
+            setPreview(frame);
+
             Bitmap[] cropped = cropImagesWithSetting(frame);
             SendProtocol(cropped);
         }
@@ -209,6 +253,17 @@ namespace LedWall
             double div = percentageFloat(percent);
             double output = num / div;
             return (int)output;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string name)
+        {
+            var handler = PropertyChanged;
+            if (null != handler)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
         }
     }
 }

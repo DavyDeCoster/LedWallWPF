@@ -27,6 +27,9 @@ namespace LedWall
     {
         static string _path = AppDomain.CurrentDomain.BaseDirectory;
 
+        public string NewPath { get; set; }
+        static Ledwall ld;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -85,7 +88,7 @@ namespace LedWall
                 Ports[i] = sw;
                 i++;
             }
-            Ledwall ld = new Ledwall(Width, Height, Ports);
+            ld = new Ledwall(Width, Height, Ports);
             //ld.ReadImage("Images//red.jpg");
             //ld.readVideo(_path + "Video//test.mp4");
         }
@@ -94,9 +97,9 @@ namespace LedWall
         {
             List<File> lstSaveFiles = new List<File>();
 
-            foreach(ListBoxItem lst in lstFiles.Items)
+            foreach(File f in lstFiles.Items)
             {
-                lstSaveFiles.Add((File)lst.Content);
+                lstSaveFiles.Add(f);
             }
 
             File.SaveFiles(lstSaveFiles);
@@ -104,7 +107,77 @@ namespace LedWall
 
         private void btnAddFile_Click(object sender, RoutedEventArgs e)
         {
-            File.AddFile();
+            File f = new File(txtName.Text, NewPath, File.CheckIfVideoOrPicture(NewPath));
+            lstFiles.Items.Add(f);
+
+            NewPath = "";
+            txtName.Text = "";
+        }
+
+        private void btnOpen_Click(object sender, RoutedEventArgs e)
+        {
+            NewPath = File.AddFile();
+        }
+
+        private void btnSendOne_Click(object sender, RoutedEventArgs e)
+        {
+            File f = (File)lstFiles.SelectedItem;
+
+            if(f.IsVideo)
+            {
+                ld.ReadVideo(f.Path);
+            }
+            else
+            {
+                ld.ReadImage(f.Path);
+            }
+        }
+
+        private void btnDeleteFile_Click(object sender, RoutedEventArgs e)
+        {
+            lstFiles.Items.Remove(lstFiles.SelectedItem);
+        }
+
+        private void btnShiftUp_Click(object sender, RoutedEventArgs e)
+        {
+            ShiftUp();
+        }
+
+        private void ShiftUp()
+        {
+            int index = lstFiles.SelectedIndex;
+            if (index > 0)
+            {
+                File f = (File)lstFiles.Items.GetItemAt(index - 1);
+                lstFiles.Items.Insert(index - 1, lstFiles.SelectedItem);
+                lstFiles.Items.RemoveAt(index);
+
+                lstFiles.Items.Insert(index, f);
+                lstFiles.Items.RemoveAt(index + 1);
+
+                lstFiles.SelectedIndex = index-1;
+            }
+        }
+
+        private void btnShiftDown_Click(object sender, RoutedEventArgs e)
+        {
+            ShiftDown();
+        }
+
+        private void ShiftDown()
+        {
+            int index = lstFiles.SelectedIndex;
+            if (index != lstFiles.Items.Count-1)
+            {
+                File f = (File)lstFiles.Items.GetItemAt(index + 1);
+                lstFiles.Items.Insert(index + 1, lstFiles.SelectedItem);
+                lstFiles.Items.RemoveAt(index);
+
+                lstFiles.Items.Insert(index, f);
+                lstFiles.Items.RemoveAt(index + 2);
+
+                lstFiles.SelectedIndex = index+1;
+            }
         }
     }
 }

@@ -187,7 +187,7 @@ namespace LedWall
             return ((green << 16) | (red << 8) | (blue));
         }
 
-        public void readVideo(string path)
+        public void ReadVideo(string path)
         {
             FileVideoSource fvs = new FileVideoSource(path);
             fvs.NewFrame += fvs_NewFrame;

@@ -5,18 +5,37 @@
         Title="MainWindow" Height="458" Width="700" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="8*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2.5*"/>
+            <RowDefinition Height="0.5*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <ListBox x:Name="lstFiles" HorizontalAlignment="Left" Height="360" Margin="10,10,0,0" VerticalAlignment="Top" Width="321"/>
-        <Button x:Name="btnAddFile" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Height="27" Click="btnAddFile_Click"/>
-        <Button x:Name="btnDeleteFile" Content="Delete" HorizontalAlignment="Left" Margin="105,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Height="27"/>
-        <Button x:Name="btnShiftDown" Content="▼" HorizontalAlignment="Left" Margin="261,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="30" Height="27"/>
-        <Button x:Name="btnShiftUp" Content="▲" HorizontalAlignment="Left" Margin="206,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="30" Height="27"/>
+        <ListBox x:Name="lstFiles" HorizontalAlignment="Left" Height="360" Margin="10,10,0,0" VerticalAlignment="Top" Width="321" Grid.RowSpan="2"/>
+        <Button x:Name="btnDeleteFile" Content="Delete" HorizontalAlignment="Left" Margin="105,10,0,0" Grid.Row="2" VerticalAlignment="Top" Width="75" Height="27" Click="btnDeleteFile_Click"/>
+        <Button x:Name="btnShiftDown" Content="▼" HorizontalAlignment="Left" Margin="261,10,0,0" Grid.Row="2" VerticalAlignment="Top" Width="30" Height="27" Click="btnShiftDown_Click"/>
+        <Button x:Name="btnShiftUp" Content="▲" HorizontalAlignment="Left" Margin="206,10,0,0" Grid.Row="2" VerticalAlignment="Top" Width="30" Height="27" Click="btnShiftUp_Click"/>
+        <GroupBox x:Name="grpAdd" Grid.Column="1" Header="Add file" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="151" Width="326">
+            <Grid HorizontalAlignment="Left" Height="115" Margin="10,10,-2,0" VerticalAlignment="Top" Width="306">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="btnAddFile" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="133" Height="19" Click="btnAddFile_Click" Grid.Column="1" Grid.Row="2"/>
+                <TextBlock x:Name="lblName" HorizontalAlignment="Right" Margin="5" TextWrapping="Wrap" Text="Name:" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtName" Grid.Column="1" HorizontalAlignment="Left" Height="18" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="133"/>
+                <Button x:Name="btnOpen" Content="Open" Grid.Column="1" HorizontalAlignment="Left" Height="18" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="133" Click="btnOpen_Click"/>
+                <TextBlock x:Name="lblFile" HorizontalAlignment="Right" Margin="5" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Center"><Run Text="File"/><Run Text=":"/></TextBlock>
+            </Grid>
+        </GroupBox>
+        <Button x:Name="btnSendOne" Content="Send one" HorizontalAlignment="Left" Height="28" Margin="10,9,0,0" Grid.Row="2" VerticalAlignment="Top" Width="79" Click="btnSendOne_Click"/>
 
     </Grid>
 </Window>

@@ -18,6 +18,9 @@ namespace LedWall
         static string defaultPathPicture = AppDomain.CurrentDomain.BaseDirectory + "Images";
         static string defaultPathSetting = AppDomain.CurrentDomain.BaseDirectory + "Settings//Files.csv";
 
+        static readonly List<string> ImageExtensions = new List<string> { ".JPG", ".JPE", ".BMP", ".GIF", ".PNG" };
+
+
         public File()
         {
 
@@ -25,7 +28,9 @@ namespace LedWall
 
         public File(string Name, string Path, bool isVideo)
         {
-
+            this.Name = Name;
+            this.Path = Path;
+            this.IsVideo = IsVideo;
         }
 
         public static List<File> GetAllFiles()
@@ -96,22 +101,47 @@ namespace LedWall
         {
             if(this.IsVideo)
             {
-                return this.Name + "(Video)";
+                return Name + " (Video)";
             }
             else
             {
-                return this.Name + "(Picture)";
+                return Name + " (Picture)";
             }
         }
 
-        internal static void AddFile()
+        internal static string AddFile()
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "Supported Files|*.BMP;*.JPG;*.GIF;*.PNG;*.MP4;*.AVI;*.MOV;*.MKV;*.WMV|All files (*.*)|*.*";
             if ((bool)ofd.ShowDialog())
             {
-                CopyFileToDirectory(ofd.FileName);
+                return CopyFileToDirectory(ofd.FileName);
             }
+
+            return null;
+        }
+
+        private static string CopyFileToDirectory(string p)
+        {
+            if(ImageExtensions.Contains(System.IO.Path.GetExtension(p).ToUpperInvariant()))
+            {
+                System.IO.File.Copy(p, defaultPathPicture + "/" + System.IO.Path.GetFileName(p));
+                return defaultPathPicture + "/" + System.IO.Path.GetFileName(p);
+            }
+            else
+            {
+                System.IO.File.Copy(p, defaultPathVideo + "/" + System.IO.Path.GetFileName(p));
+                return defaultPathVideo + "/" + System.IO.Path.GetFileName(p);
+            }
+        }
+
+        internal static bool CheckIfVideoOrPicture(string NewPath)
+        {
+            if (ImageExtensions.Contains(System.IO.Path.GetExtension(NewPath).ToUpperInvariant()))
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

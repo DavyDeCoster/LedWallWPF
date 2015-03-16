@@ -34,6 +34,22 @@ namespace LedWall
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            FillingComboboxes();
+            GettingSerialports();
+        }
+
+        private void FillingComboboxes()
+        {
+            List<File> Files = File.GetAllFiles();
+
+            foreach (File f in Files)
+            {
+                lstFiles.Items.Add(f);
+            }
+        }
+
+        private static void GettingSerialports()
+        {
             string[] sp = SerialPort.GetPortNames();
 
             foreach (string s in sp)
@@ -71,7 +87,24 @@ namespace LedWall
             }
             Ledwall ld = new Ledwall(Width, Height, Ports);
             //ld.ReadImage("Images//red.jpg");
-            ld.readVideo(_path + "Video//test.mp4");
+            //ld.readVideo(_path + "Video//test.mp4");
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            List<File> lstSaveFiles = new List<File>();
+
+            foreach(ListBoxItem lst in lstFiles.Items)
+            {
+                lstSaveFiles.Add((File)lst.Content);
+            }
+
+            File.SaveFiles(lstSaveFiles);
+        }
+
+        private void btnAddFile_Click(object sender, RoutedEventArgs e)
+        {
+            File.AddFile();
         }
     }
 }

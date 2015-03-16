@@ -2,15 +2,21 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:LedWall" x:Class="LedWall.MainWindow"
-        Title="MainWindow" Height="458" Width="700" Loaded="Window_Loaded">
-    <Window.DataContext>
-        <local:Ledwall/>
-    </Window.DataContext>
+        Title="MainWindow" Height="458" Width="700" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="8*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Image x:Name="imgPreview" HorizontalAlignment="Left" Height="407" Margin="10,10,0,0" VerticalAlignment="Top" Width="672" DataContext="{Binding Mode=OneWay}" Source="{Binding Preview}"/>
+        <ListBox x:Name="lstFiles" HorizontalAlignment="Left" Height="360" Margin="10,10,0,0" VerticalAlignment="Top" Width="321"/>
+        <Button x:Name="btnAddFile" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Height="27" Click="btnAddFile_Click"/>
+        <Button x:Name="btnDeleteFile" Content="Delete" HorizontalAlignment="Left" Margin="105,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Height="27"/>
+        <Button x:Name="btnShiftDown" Content="▼" HorizontalAlignment="Left" Margin="261,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="30" Height="27"/>
+        <Button x:Name="btnShiftUp" Content="▲" HorizontalAlignment="Left" Margin="206,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="30" Height="27"/>
 
     </Grid>
 </Window>

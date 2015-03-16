@@ -135,6 +135,7 @@ namespace LedWall
 
         private void btnDeleteFile_Click(object sender, RoutedEventArgs e)
         {
+            File.DeleteFile((File)lstFiles.SelectedItem);
             lstFiles.Items.Remove(lstFiles.SelectedItem);
         }
 

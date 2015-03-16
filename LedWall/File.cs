@@ -143,5 +143,10 @@ namespace LedWall
             }
             return true;
         }
+
+        internal static void DeleteFile(File p)
+        {
+            System.IO.File.Delete(p.Path);
+        }
     }
 }

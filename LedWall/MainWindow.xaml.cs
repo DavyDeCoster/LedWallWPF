@@ -28,7 +28,8 @@ namespace LedWall
         static string _path = AppDomain.CurrentDomain.BaseDirectory;
 
         public string NewPath { get; set; }
-        static Ledwall ld;
+        Ledwall ld;
+        Thread PlaylistThread;
 
         public MainWindow()
         {
@@ -39,6 +40,7 @@ namespace LedWall
         {
             FillingComboboxes();
             GettingSerialports();
+            btnStop.IsEnabled = false;
         }
 
         private void FillingComboboxes()
@@ -51,46 +53,55 @@ namespace LedWall
             }
         }
 
-        private static void GettingSerialports()
+        private void GettingSerialports()
         {
             string[] sp = SerialPort.GetPortNames();
 
-            foreach (string s in sp)
+            if(sp.Length != 0)
             {
-                Console.WriteLine(s);
+                foreach (string s in sp)
+                {
+                    Console.WriteLine(s);
+                }
+
+                SerialWriter[] Ports = SerialWriter.InitializeArray<SerialWriter>(sp.Length);
+
+                int Height = 0;
+                int Width = 0;
+
+                int i = 0;
+                foreach (string s in sp)
+                {
+                    SerialWriter sw = new SerialWriter(s);
+                    if (sw.WriterHeight != 1)
+                    {
+                        Height += sw.LedHeight;
+                    }
+                    else
+                    {
+                        Height = sw.LedHeight;
+                    }
+                    if (sw.WriterWidth != 1)
+                    {
+                        Width += sw.LedWidth;
+                    }
+                    else
+                    {
+                        Width = sw.LedWidth;
+                    }
+                    Ports[i] = sw;
+                    i++;
+                }
+                ld = new Ledwall(Width, Height, Ports);
+                //ld.ReadImage("Images//red.jpg");
+                //ld.readVideo(_path + "Video//test.mp4");
             }
-
-            SerialWriter[] Ports = SerialWriter.InitializeArray<SerialWriter>(sp.Length);
-
-            int Height = 0;
-            int Width = 0;
-
-            int i = 0;
-            foreach (string s in sp)
+            else
             {
-                SerialWriter sw = new SerialWriter(s);
-                if (sw.WriterHeight != 1)
-                {
-                    Height += sw.LedHeight;
-                }
-                else
-                {
-                    Height = sw.LedHeight;
-                }
-                if (sw.WriterWidth != 1)
-                {
-                    Width += sw.LedWidth;
-                }
-                else
-                {
-                    Width = sw.LedWidth;
-                }
-                Ports[i] = sw;
-                i++;
+                MessageBox.Show("No Serial Connection, you can only add files");
+                btnPlayPlaylist.IsEnabled = false;
+                btnSendOne.IsEnabled = false;
             }
-            ld = new Ledwall(Width, Height, Ports);
-            //ld.ReadImage("Images//red.jpg");
-            //ld.readVideo(_path + "Video//test.mp4");
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -179,6 +190,36 @@ namespace LedWall
 
                 lstFiles.SelectedIndex = index+1;
             }
+        }
+
+        private void btnPlayPlaylist_Click(object sender, RoutedEventArgs e)
+        {
+            SendPlaylist();
+        }
+
+        private void SendPlaylist()
+        {
+            List<File> Files = new List<File>();
+
+            foreach (File f in lstFiles.Items)
+            {
+                Files.Add(f);
+            }
+
+            if(ld != null)
+            {
+                ld.Playlist = Files;
+                PlaylistThread = new Thread(new ThreadStart(ld.SendPlaylist));
+
+                PlaylistThread.Start();
+                btnStop.IsEnabled = true;
+            }
+        }
+
+        private void btnStop_Click(object sender, RoutedEventArgs e)
+        {
+            PlaylistThread.Abort();
+            btnStop.IsEnabled = false;
         }
     }
 }

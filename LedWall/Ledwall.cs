@@ -24,6 +24,7 @@ namespace LedWall
         public int Height { get; set; }
         public SerialWriter[] Ports { get; set; }
         public bool Available { get; set; }
+        public List<File> Playlist { get; set; }
 
         private System.Windows.Media.ImageSource _preview;
 
@@ -263,6 +264,28 @@ namespace LedWall
             if (null != handler)
             {
                 handler(this, new PropertyChangedEventArgs(name));
+            }
+        }
+
+        internal void SendPlaylist()
+        {
+            int len = Playlist.Count+1;
+            for (int i = 0; i < len; i++)
+            {
+                File f = Playlist[i];
+                if (f.IsVideo)
+                {
+                    ReadVideo(f.Path);
+                }
+                else
+                {
+                    ReadImage(f.Path);
+                }
+
+                if(i == len-1)
+                {
+                    i = 0;
+                }
             }
         }
     }

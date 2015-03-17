@@ -30,7 +30,7 @@
                 </Grid.ColumnDefinitions>
                 <Button x:Name="btnAddFile" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="133" Height="19" Click="btnAddFile_Click" Grid.Column="1" Grid.Row="2"/>
                 <TextBlock x:Name="lblName" HorizontalAlignment="Right" Margin="5" TextWrapping="Wrap" Text="Name:" VerticalAlignment="Center"/>
-                <TextBox x:Name="txtName" Grid.Column="1" HorizontalAlignment="Left" Height="18" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="133"/>
+                <TextBox x:Name="txtName" Grid.Column="1" HorizontalAlignment="Left" Height="18" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="133" TextChanged="txtName_TextChanged"/>
                 <Button x:Name="btnOpen" Content="Open" Grid.Column="1" HorizontalAlignment="Left" Height="18" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="133" Click="btnOpen_Click"/>
                 <TextBlock x:Name="lblFile" HorizontalAlignment="Right" Margin="5" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Center"><Run Text="File"/><Run Text=":"/></TextBlock>
             </Grid>

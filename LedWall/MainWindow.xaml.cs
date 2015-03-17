@@ -41,6 +41,7 @@ namespace LedWall
             FillingComboboxes();
             GettingSerialports();
             btnStop.IsEnabled = false;
+            EnableDisableAdd();
         }
 
         private void FillingComboboxes()
@@ -128,6 +129,7 @@ namespace LedWall
         private void btnOpen_Click(object sender, RoutedEventArgs e)
         {
             NewPath = File.AddFile();
+            EnableDisableAdd();
         }
 
         private void btnSendOne_Click(object sender, RoutedEventArgs e)
@@ -220,6 +222,23 @@ namespace LedWall
         {
             PlaylistThread.Abort();
             btnStop.IsEnabled = false;
+        }
+
+        private void txtName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            EnableDisableAdd();
+        }
+
+        private void EnableDisableAdd()
+        {
+            if (txtName.Text == "" || NewPath == null)
+            {
+                btnAddFile.IsEnabled = false;
+            }
+            else
+            {
+                btnAddFile.IsEnabled = true;
+            }
         }
     }
 }

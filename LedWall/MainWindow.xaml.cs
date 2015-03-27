@@ -94,8 +94,6 @@ namespace LedWall
                     i++;
                 }
                 ld = new Ledwall(Width, Height, Ports);
-                //ld.ReadImage("Images//red.jpg");
-                //ld.readVideo(_path + "Video//test.mp4");
             }
             else
             {

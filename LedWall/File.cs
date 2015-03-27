@@ -30,7 +30,7 @@ namespace LedWall
         {
             this.Name = Name;
             this.Path = Path;
-            this.IsVideo = IsVideo;
+            this.IsVideo = isVideo;
         }
 
         public static List<File> GetAllFiles()
@@ -123,16 +123,34 @@ namespace LedWall
 
         private static string CopyFileToDirectory(string p)
         {
-            if(ImageExtensions.Contains(System.IO.Path.GetExtension(p).ToUpperInvariant()))
-            {
-                System.IO.File.Copy(p, defaultPathPicture + "/" + System.IO.Path.GetFileName(p));
-                return defaultPathPicture + "/" + System.IO.Path.GetFileName(p);
-            }
-            else
-            {
-                System.IO.File.Copy(p, defaultPathVideo + "/" + System.IO.Path.GetFileName(p));
-                return defaultPathVideo + "/" + System.IO.Path.GetFileName(p);
-            }
+                if (ImageExtensions.Contains(System.IO.Path.GetExtension(p).ToUpperInvariant()))
+                {
+                    try
+                    {
+                        System.IO.File.Copy(p, defaultPathPicture + "/" + System.IO.Path.GetFileName(p));
+                        return defaultPathPicture + "/" + System.IO.Path.GetFileName(p);
+                    }
+                    catch(IOException)
+                    {
+                        System.IO.File.Delete(defaultPathPicture+"/"+System.IO.Path.GetFileName(p));
+                        System.IO.File.Copy(p, defaultPathPicture + "/" + System.IO.Path.GetFileName(p));
+                        return defaultPathPicture + "/" + System.IO.Path.GetFileName(p);
+                    }
+                }
+                else
+                {
+                     try
+                    {
+                        System.IO.File.Copy(p, defaultPathVideo + "/" + System.IO.Path.GetFileName(p));
+                        return defaultPathVideo + "/" + System.IO.Path.GetFileName(p);
+                    }
+                    catch(IOException)
+                    {
+                        System.IO.File.Delete(defaultPathVideo+"/"+System.IO.Path.GetFileName(p));
+                        System.IO.File.Copy(p, defaultPathVideo + "/" + System.IO.Path.GetFileName(p));
+                        return defaultPathVideo + "/" + System.IO.Path.GetFileName(p);
+                    }
+             }
         }
 
         internal static bool CheckIfVideoOrPicture(string NewPath)

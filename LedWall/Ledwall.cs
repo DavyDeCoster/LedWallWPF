@@ -269,7 +269,7 @@ namespace LedWall
 
         internal void SendPlaylist()
         {
-            int len = Playlist.Count+1;
+            int len = Playlist.Count;
             for (int i = 0; i < len; i++)
             {
                 File f = Playlist[i];
@@ -280,11 +280,6 @@ namespace LedWall
                 else
                 {
                     ReadImage(f.Path);
-                }
-
-                if(i == len-1)
-                {
-                    i = 0;
                 }
             }
         }

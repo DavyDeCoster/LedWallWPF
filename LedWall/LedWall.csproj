@@ -58,6 +58,9 @@
     <Reference Include="AForge.Video.DirectShow">
       <HintPath>..\packages\AForge.Video.DirectShow.2.2.5\lib\AForge.Video.DirectShow.dll</HintPath>
     </Reference>
+    <Reference Include="DirectShowLib-2005">
+      <HintPath>..\lib\DirectShowLib-2005.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -80,6 +83,8 @@
     </ApplicationDefinition>
     <Compile Include="File.cs" />
     <Compile Include="SerialWriter.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="TxtToImage.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

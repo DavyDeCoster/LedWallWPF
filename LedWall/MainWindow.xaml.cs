@@ -58,7 +58,7 @@ namespace LedWall
         {
             string[] sp = SerialPort.GetPortNames();
 
-            if(sp.Length != 0)
+            if (sp.Length != 0)
             {
                 foreach (string s in sp)
                 {
@@ -107,7 +107,7 @@ namespace LedWall
         {
             List<File> lstSaveFiles = new List<File>();
 
-            foreach(File f in lstFiles.Items)
+            foreach (File f in lstFiles.Items)
             {
                 lstSaveFiles.Add(f);
             }
@@ -134,7 +134,7 @@ namespace LedWall
         {
             File f = (File)lstFiles.SelectedItem;
 
-            if(f.IsVideo)
+            if (f.IsVideo)
             {
                 ld.ReadVideo(f.Path);
             }
@@ -167,7 +167,7 @@ namespace LedWall
                 lstFiles.Items.Insert(index, f);
                 lstFiles.Items.RemoveAt(index + 1);
 
-                lstFiles.SelectedIndex = index-1;
+                lstFiles.SelectedIndex = index - 1;
             }
         }
 
@@ -179,7 +179,7 @@ namespace LedWall
         private void ShiftDown()
         {
             int index = lstFiles.SelectedIndex;
-            if (index != lstFiles.Items.Count-1)
+            if (index != lstFiles.Items.Count - 1)
             {
                 File f = (File)lstFiles.Items.GetItemAt(index + 1);
                 lstFiles.Items.Insert(index + 1, lstFiles.SelectedItem);
@@ -188,7 +188,7 @@ namespace LedWall
                 lstFiles.Items.Insert(index, f);
                 lstFiles.Items.RemoveAt(index + 2);
 
-                lstFiles.SelectedIndex = index+1;
+                lstFiles.SelectedIndex = index + 1;
             }
         }
 
@@ -206,7 +206,7 @@ namespace LedWall
                 Files.Add(f);
             }
 
-            if(ld != null)
+            if (ld != null)
             {
                 ld.Playlist = Files;
                 PlaylistThread = new Thread(new ThreadStart(ld.SendPlaylist));
@@ -237,6 +237,31 @@ namespace LedWall
             {
                 btnAddFile.IsEnabled = true;
             }
+        }
+
+        private void btnAddText_Click(object sender, RoutedEventArgs e)
+        {
+            string text = txtText.Text;
+            int width;
+            int height;
+            if(ld!=null){
+                width = ld.Width;
+                height = ld.Height;
+            }
+            else
+            {
+                width = 107;
+                height = 48;
+            }
+
+            Bitmap bm = TxtToImage.ConvertTextToImage(text.ToUpper(), "Arial", 20, System.Drawing.Color.Black, System.Drawing.Color.White, width, height);
+            string Path = _path + "Text\\" + text + ".bmp";
+            bm.Save(Path);
+
+            File f = new File(text, Path, false);
+            lstFiles.Items.Add(f);
+
+            txtText.Text = "";
         }
     }
 }

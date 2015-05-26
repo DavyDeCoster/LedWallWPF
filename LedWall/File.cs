@@ -19,6 +19,9 @@ namespace LedWall
         static string defaultPathSetting = AppDomain.CurrentDomain.BaseDirectory + "Settings//Files.csv";
 
         static readonly List<string> ImageExtensions = new List<string> { ".JPG", ".JPE", ".BMP", ".GIF", ".PNG" };
+        private string text;
+        private System.Drawing.Bitmap bitmap;
+        private bool p;
 
 
         public File()
@@ -87,7 +90,7 @@ namespace LedWall
             {
                 SaveFiles(lstFiles);
             }
-            
+
 
             return lstFiles;
         }
@@ -99,7 +102,7 @@ namespace LedWall
 
         public override string ToString()
         {
-            if(this.IsVideo)
+            if (this.IsVideo)
             {
                 return Name + " (Video)";
             }
@@ -123,34 +126,34 @@ namespace LedWall
 
         private static string CopyFileToDirectory(string p)
         {
-                if (ImageExtensions.Contains(System.IO.Path.GetExtension(p).ToUpperInvariant()))
+            if (ImageExtensions.Contains(System.IO.Path.GetExtension(p).ToUpperInvariant()))
+            {
+                try
                 {
-                    try
-                    {
-                        System.IO.File.Copy(p, defaultPathPicture + "/" + System.IO.Path.GetFileName(p));
-                        return defaultPathPicture + "/" + System.IO.Path.GetFileName(p);
-                    }
-                    catch(IOException)
-                    {
-                        System.IO.File.Delete(defaultPathPicture+"/"+System.IO.Path.GetFileName(p));
-                        System.IO.File.Copy(p, defaultPathPicture + "/" + System.IO.Path.GetFileName(p));
-                        return defaultPathPicture + "/" + System.IO.Path.GetFileName(p);
-                    }
+                    System.IO.File.Copy(p, defaultPathPicture + "/" + System.IO.Path.GetFileName(p));
+                    return defaultPathPicture + "/" + System.IO.Path.GetFileName(p);
                 }
-                else
+                catch (IOException)
                 {
-                     try
-                    {
-                        System.IO.File.Copy(p, defaultPathVideo + "/" + System.IO.Path.GetFileName(p));
-                        return defaultPathVideo + "/" + System.IO.Path.GetFileName(p);
-                    }
-                    catch(IOException)
-                    {
-                        System.IO.File.Delete(defaultPathVideo+"/"+System.IO.Path.GetFileName(p));
-                        System.IO.File.Copy(p, defaultPathVideo + "/" + System.IO.Path.GetFileName(p));
-                        return defaultPathVideo + "/" + System.IO.Path.GetFileName(p);
-                    }
-             }
+                    System.IO.File.Delete(defaultPathPicture + "/" + System.IO.Path.GetFileName(p));
+                    System.IO.File.Copy(p, defaultPathPicture + "/" + System.IO.Path.GetFileName(p));
+                    return defaultPathPicture + "/" + System.IO.Path.GetFileName(p);
+                }
+            }
+            else
+            {
+                try
+                {
+                    System.IO.File.Copy(p, defaultPathVideo + "/" + System.IO.Path.GetFileName(p));
+                    return defaultPathVideo + "/" + System.IO.Path.GetFileName(p);
+                }
+                catch (IOException)
+                {
+                    System.IO.File.Delete(defaultPathVideo + "/" + System.IO.Path.GetFileName(p));
+                    System.IO.File.Copy(p, defaultPathVideo + "/" + System.IO.Path.GetFileName(p));
+                    return defaultPathVideo + "/" + System.IO.Path.GetFileName(p);
+                }
+            }
         }
 
         internal static bool CheckIfVideoOrPicture(string NewPath)

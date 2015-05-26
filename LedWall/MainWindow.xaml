@@ -38,6 +38,22 @@
         <Button x:Name="btnSendOne" Content="Send one" HorizontalAlignment="Left" Height="28" Margin="10,9,0,0" Grid.Row="2" VerticalAlignment="Top" Width="59" Click="btnSendOne_Click"/>
         <Button x:Name="btnPlayPlaylist" Content="Play" HorizontalAlignment="Left" Height="28" Margin="74,8,0,0" Grid.Row="2" VerticalAlignment="Top" Width="59" Click="btnPlayPlaylist_Click"/>
         <Button x:Name="btnStop" Content="Stop" HorizontalAlignment="Left" Height="28" Margin="138,8,0,0" Grid.Row="2" VerticalAlignment="Top" Width="59" Click="btnStop_Click"/>
+        <GroupBox x:Name="grpText" Grid.Column="1" Header="Add Text" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="104" Width="326" Grid.Row="1">
+            <Grid HorizontalAlignment="Left" Height="72" Margin="10,10,-2,0" VerticalAlignment="Top" Width="306">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="btnAddText" Content="Add" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Width="133" Height="19" Click="btnAddText_Click" Grid.Column="1" Grid.Row="1"/>
+                <TextBlock x:Name="lblText" HorizontalAlignment="Right" Margin="0,5,118,3" TextWrapping="Wrap" Text="Text:" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtText" HorizontalAlignment="Left" Height="18" Margin="56,5,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="239" TextChanged="txtName_TextChanged" Grid.ColumnSpan="2"/>
+            </Grid>
+        </GroupBox>
 
     </Grid>
 </Window>

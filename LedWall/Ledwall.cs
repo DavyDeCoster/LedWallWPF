@@ -150,6 +150,7 @@ namespace LedWall
                         pixel[i] = bm.GetPixel(x, y + (linesPerPin*i));
                         editedPixels[i] = colorWiring(pixel[i]);
                     }
+                            }
 
                     for (mask = 0x800000; mask != 0; mask >>= 1)
                     {
@@ -159,7 +160,6 @@ namespace LedWall
                             if ((editedPixels[i] & mask) != 0)
                             {
                                 b |= (sbyte)(1 << i);
-                            }
                         }
                         data[offset++] = b;
                     }
@@ -193,6 +193,7 @@ namespace LedWall
             FileVideoSource fvs = new FileVideoSource(path);
             fvs.NewFrame += fvs_NewFrame;
             fvs.Start();
+            
         }
 
         private void fvs_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
@@ -275,12 +276,45 @@ namespace LedWall
                 File f = Playlist[i];
                 if (f.IsVideo)
                 {
-                    ReadVideo(f.Path);
+                    double length;
+                    if(GetVideoLength(f.Path, out length))
+                    {
+                        ReadVideo(f.Path);
+                        Thread.Sleep(Convert.ToInt32(length * 1000));
+                    }
                 }
                 else
                 {
                     ReadImage(f.Path);
+                    Thread.Sleep(5000);
                 }
+            }
+        }
+
+        static public bool GetVideoLength(string fileName, out double length)
+        {
+            DirectShowLib.FilterGraph graphFilter = new DirectShowLib.FilterGraph();
+            DirectShowLib.IGraphBuilder graphBuilder;
+            DirectShowLib.IMediaPosition mediaPos;
+            length = 0.0;
+
+            try
+            {
+                graphBuilder = (DirectShowLib.IGraphBuilder)graphFilter;
+                graphBuilder.RenderFile(fileName, null);
+                mediaPos = (DirectShowLib.IMediaPosition)graphBuilder;
+                mediaPos.get_Duration(out length);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                mediaPos = null;
+                graphBuilder = null;
+                graphFilter = null;
             }
         }
     }

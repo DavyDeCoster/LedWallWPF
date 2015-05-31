@@ -13,6 +13,7 @@ namespace LedWall
         public string Path { get; set; }
         public bool IsVideo { get; set; }
         public string Name { get; set; }
+        public List<File> Files { get; set; }
 
         static string defaultPathVideo = AppDomain.CurrentDomain.BaseDirectory + "Video";
         static string defaultPathPicture = AppDomain.CurrentDomain.BaseDirectory + "Images";
@@ -34,6 +35,12 @@ namespace LedWall
             this.Name = Name;
             this.Path = Path;
             this.IsVideo = isVideo;
+        }
+
+        public File(string Name, List<File> Files)
+        {
+            this.Name = Name;
+            this.Files = Files;
         }
 
         public static List<File> GetAllFiles()
@@ -83,7 +90,6 @@ namespace LedWall
             }
             catch (DirectoryNotFoundException)
             {
-
                 Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "Settings");
             }
             catch (FileNotFoundException)
@@ -167,7 +173,17 @@ namespace LedWall
 
         internal static void DeleteFile(File p)
         {
-            System.IO.File.Delete(p.Path);
+            if(p.Path != null)
+            {
+                System.IO.File.Delete(p.Path);
+            }
+            else
+            {
+                foreach (File f in p.Files)
+                {
+                    System.IO.File.Delete(f.Path);
+                }
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ using System.ComponentModel;
 
 namespace LedWall
 {
-    class Ledwall:INotifyPropertyChanged
+    class Ledwall : INotifyPropertyChanged
     {
         static sbyte[] data;
 
@@ -25,27 +25,8 @@ namespace LedWall
         public SerialWriter[] Ports { get; set; }
         public bool Available { get; set; }
         public List<File> Playlist { get; set; }
-
-        private System.Windows.Media.ImageSource _preview;
-
-        public System.Windows.Media.ImageSource Preview
-        {
-            get { 
-                if(_preview == null)
-                {
-                    Bitmap bm = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "Images//red.jpg");
-                    IntPtr hBitmap = bm.GetHbitmap();
-                    System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-
-                    return WpfBitmap;
-                }
-                return _preview; 
-            }
-            set { _preview = value;
-            OnPropertyChanged("Preview");
-            }
-        }
-        
+        public bool Loop { get; set; }
+        public bool Stop { get; set; }
 
         public Ledwall(int width, int height, SerialWriter[] Ports)
         {
@@ -67,23 +48,14 @@ namespace LedWall
             Bitmap bmOriginal = new Bitmap(path);
             Bitmap bm = new Bitmap(bmOriginal, Width, Height);
 
-            setPreview(bm);
-
             Bitmap[] cropped = cropImagesWithSetting(bm);
 
             SendProtocol(cropped);
         }
 
-        private void setPreview(Bitmap bm)
-        {
-            IntPtr hBitmap = bm.GetHbitmap();
-            System.Windows.Media.ImageSource WpfBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            Preview = WpfBitmap;
-        }
-
         private void DefineData(Bitmap b)
         {
-                data = new sbyte[b.Height * b.Width * 3 + 3];
+            data = new sbyte[b.Height * b.Width * 3 + 3];
         }
 
         private Bitmap[] cropImagesWithSetting(Bitmap bm)
@@ -127,7 +99,7 @@ namespace LedWall
         {
             Color[] pixel = new Color[8];
             int[] editedPixels = new int[8];
-            int x, y, xbegin, xend, xinc, mask, offset = 3, linesPerPin = bm.Height/8;
+            int x, y, xbegin, xend, xinc, mask, offset = 3, linesPerPin = bm.Height / 8;
 
             for (y = 0; y < linesPerPin; y++)
             {
@@ -139,7 +111,7 @@ namespace LedWall
                 }
                 else
                 {
-                    xbegin = Width-1;
+                    xbegin = Width - 1;
                     xend = -1;
                     xinc = -1;
                 }
@@ -147,19 +119,19 @@ namespace LedWall
                 {
                     for (int i = 0; i < 8; i++)
                     {
-                        pixel[i] = bm.GetPixel(x, y + (linesPerPin*i));
+                        pixel[i] = bm.GetPixel(x, y + (linesPerPin * i));
                         editedPixels[i] = colorWiring(pixel[i]);
                     }
-                            }
+                }
 
-                    for (mask = 0x800000; mask != 0; mask >>= 1)
+                for (mask = 0x800000; mask != 0; mask >>= 1)
+                {
+                    sbyte b = 0;
+                    for (int i = 0; i < 8; i++)
                     {
-                        sbyte b = 0;
-                        for (int i = 0; i < 8; i++)
+                        if ((editedPixels[i] & mask) != 0)
                         {
-                            if ((editedPixels[i] & mask) != 0)
-                            {
-                                b |= (sbyte)(1 << i);
+                            b |= (sbyte)(1 << i);
                         }
                         data[offset++] = b;
                     }
@@ -193,14 +165,12 @@ namespace LedWall
             FileVideoSource fvs = new FileVideoSource(path);
             fvs.NewFrame += fvs_NewFrame;
             fvs.Start();
-            
+
         }
 
         private void fvs_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
         {
             Bitmap frame = new Bitmap(eventArgs.Frame, Width, Height);
-
-            setPreview(frame);
 
             Bitmap[] cropped = cropImagesWithSetting(frame);
             SendProtocol(cropped);
@@ -277,7 +247,7 @@ namespace LedWall
                 if (f.IsVideo)
                 {
                     double length;
-                    if(GetVideoLength(f.Path, out length))
+                    if (GetVideoLength(f.Path, out length))
                     {
                         ReadVideo(f.Path);
                         Thread.Sleep(Convert.ToInt32(length * 1000));
@@ -285,9 +255,28 @@ namespace LedWall
                 }
                 else
                 {
-                    ReadImage(f.Path);
-                    Thread.Sleep(5000);
+                    if(f.Path == null)
+                    {
+                        foreach (File sf in f.Files)
+                        {
+                            ReadImage(sf.Path);
+                        }
+                    }
+                    else
+                    {
+                        ReadImage(f.Path);
+                        Thread.Sleep(5000);
+                    }
                 }
+
+                if(Stop)
+                {
+                    return;
+                }
+            }
+            if(Loop)
+            {
+                SendPlaylist();
             }
         }
 

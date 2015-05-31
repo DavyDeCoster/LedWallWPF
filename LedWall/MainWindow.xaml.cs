@@ -76,7 +76,7 @@ namespace LedWall
                     SerialWriter sw = new SerialWriter(s);
                     if (sw.WriterHeight != 1)
                     {
-                        Height += sw.LedHeight;
+                        Height = sw.LedHeight;
                     }
                     else
                     {
@@ -84,7 +84,7 @@ namespace LedWall
                     }
                     if (sw.WriterWidth != 1)
                     {
-                        Width += sw.LedWidth;
+                        Width = sw.LedWidth;
                     }
                     else
                     {
@@ -134,13 +134,24 @@ namespace LedWall
         {
             File f = (File)lstFiles.SelectedItem;
 
-            if (f.IsVideo)
+            if(f.Files==null)
             {
-                ld.ReadVideo(f.Path);
+                if (f.IsVideo)
+                {
+                    ld.ReadVideo(f.Path);
+                }
+                else
+                {
+                    ld.ReadImage(f.Path);
+                }
             }
+
             else
             {
-                ld.ReadImage(f.Path);
+                foreach (File s in f.Files)
+                {
+                    ld.ReadImage(s.Path);
+                }
             }
         }
 
@@ -195,6 +206,7 @@ namespace LedWall
         private void btnPlayPlaylist_Click(object sender, RoutedEventArgs e)
         {
             SendPlaylist();
+            btnPlayPlaylist.IsEnabled = false;
         }
 
         private void SendPlaylist()
@@ -209,6 +221,7 @@ namespace LedWall
             if (ld != null)
             {
                 ld.Playlist = Files;
+                ld.Stop = false;
                 PlaylistThread = new Thread(new ThreadStart(ld.SendPlaylist));
 
                 PlaylistThread.Start();
@@ -219,7 +232,9 @@ namespace LedWall
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
             PlaylistThread.Abort();
+            ld.Stop = true;
             btnStop.IsEnabled = false;
+            btnPlayPlaylist.IsEnabled = true;
         }
 
         private void txtName_TextChanged(object sender, TextChangedEventArgs e)
@@ -241,10 +256,23 @@ namespace LedWall
 
         private void btnAddText_Click(object sender, RoutedEventArgs e)
         {
+            if(!(bool)chkMarquee.IsChecked)
+            {
+                SaveTextToImage();
+            }
+            else
+            {
+                SaveTextToMarquee();
+            }
+        }
+
+        private void SaveTextToMarquee()
+        {
             string text = txtText.Text;
             int width;
             int height;
-            if(ld!=null){
+            if (ld != null)
+            {
                 width = ld.Width;
                 height = ld.Height;
             }
@@ -254,7 +282,46 @@ namespace LedWall
                 height = 48;
             }
 
-            Bitmap bm = TxtToImage.ConvertTextToImage(text.ToUpper(), "Arial", 20, System.Drawing.Color.Black, System.Drawing.Color.White, width, height);
+            int marginText = -1*(1+text.Length * 25);
+            int startText = 100;
+            int i = 0;
+            List<string> lstPaths = new List<string>();
+            List<File> lstFilesMarquee = new List<File>();
+
+            while(startText>marginText)
+            {
+                Bitmap bm = TxtToImage.ConvertTextToImage(text.ToUpper(), "Courier", 25, System.Drawing.Color.Black, System.Drawing.Color.White, width, height, startText, 0);
+                string Path = _path + "Marquee\\" + text + i.ToString() + ".bmp";
+                bm.Save(Path);
+                startText -= 1;
+                i++;
+                lstPaths.Add(Path);
+                File f = new File(text, Path, false);
+                lstFilesMarquee.Add(f);
+            }
+
+            File fMarquee = new File(text, lstFilesMarquee);
+            lstFiles.Items.Add(fMarquee);
+            txtText.Text = "";
+        }
+
+        private void SaveTextToImage()
+        {
+            string text = txtText.Text;
+            int width;
+            int height;
+            if (ld != null)
+            {
+                width = ld.Width;
+                height = ld.Height;
+            }
+            else
+            {
+                width = 107;
+                height = 48;
+            }
+
+            Bitmap bm = TxtToImage.ConvertTextToImage(text.ToUpper(), "Arial", 25, System.Drawing.Color.Black, System.Drawing.Color.White, width, height);
             string Path = _path + "Text\\" + text + ".bmp";
             bm.Save(Path);
 
@@ -262,6 +329,16 @@ namespace LedWall
             lstFiles.Items.Add(f);
 
             txtText.Text = "";
+        }
+
+        private void chkLoop_Checked(object sender, RoutedEventArgs e)
+        {
+            ld.Loop = true;
+        }
+
+        private void chkLoop_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ld.Loop = false;
         }
     }
 }

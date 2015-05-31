@@ -26,13 +26,13 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="5*"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="btnAddFile" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="133" Height="19" Click="btnAddFile_Click" Grid.Column="1" Grid.Row="2"/>
-                <TextBlock x:Name="lblName" HorizontalAlignment="Right" Margin="5" TextWrapping="Wrap" Text="Name:" VerticalAlignment="Center"/>
-                <TextBox x:Name="txtName" Grid.Column="1" HorizontalAlignment="Left" Height="18" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="133" TextChanged="txtName_TextChanged"/>
-                <Button x:Name="btnOpen" Content="Open" Grid.Column="1" HorizontalAlignment="Left" Height="18" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="133" Click="btnOpen_Click"/>
-                <TextBlock x:Name="lblFile" HorizontalAlignment="Right" Margin="5" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Center"><Run Text="File"/><Run Text=":"/></TextBlock>
+                <Button x:Name="btnAddFile" Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="235" Height="19" Click="btnAddFile_Click" Grid.Column="1" Grid.Row="2"/>
+                <TextBlock x:Name="lblName" HorizontalAlignment="Right" Margin="0,11,5,11" TextWrapping="Wrap" Text="Name:" VerticalAlignment="Center" Height="16" Width="34"/>
+                <TextBox x:Name="txtName" Grid.Column="1" HorizontalAlignment="Left" Height="18" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="235" TextChanged="txtName_TextChanged"/>
+                <Button x:Name="btnOpen" Content="Open" Grid.Column="1" HorizontalAlignment="Left" Height="18" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="235" Click="btnOpen_Click"/>
+                <TextBlock x:Name="lblFile" HorizontalAlignment="Right" Margin="0,11,5,11" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Center" Height="16" Width="21"><Run Text="File"/><Run Text=":"/></TextBlock>
             </Grid>
         </GroupBox>
         <Button x:Name="btnSendOne" Content="Send one" HorizontalAlignment="Left" Height="28" Margin="10,9,0,0" Grid.Row="2" VerticalAlignment="Top" Width="59" Click="btnSendOne_Click"/>
@@ -49,10 +49,15 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="btnAddText" Content="Add" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Width="133" Height="19" Click="btnAddText_Click" Grid.Column="1" Grid.Row="1"/>
+                <Button x:Name="btnAddText" Content="Add" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Width="133" Height="19" Click="btnAddText_Click" Grid.Column="1" Grid.Row="2"/>
                 <TextBlock x:Name="lblText" HorizontalAlignment="Right" Margin="0,5,118,3" TextWrapping="Wrap" Text="Text:" VerticalAlignment="Center"/>
                 <TextBox x:Name="txtText" HorizontalAlignment="Left" Height="18" Margin="56,5,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="239" TextChanged="txtName_TextChanged" Grid.ColumnSpan="2"/>
+                <CheckBox x:Name="chkMarquee" Content="Marquee" Grid.Column="1" HorizontalAlignment="Left" Margin="10,4,0,0" Grid.Row="1" VerticalAlignment="Top" Width="130"/>
             </Grid>
+        </GroupBox>
+        <CheckBox x:Name="chkLoop" Content="Loop" Grid.Column="1" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="2" VerticalAlignment="Top" Height="22" Width="93" Checked="chkLoop_Checked" Unchecked="chkLoop_Unchecked"/>
+        <GroupBox x:Name="gpMonitor" Header="Monitor" HorizontalAlignment="Left" Margin="10,119,0,0" Grid.Row="1" VerticalAlignment="Top" Height="85" Width="326" Grid.Column="1">
+            <Canvas x:Name="cnvsMonitor" HorizontalAlignment="Center" Height="48" VerticalAlignment="Center" Width="107"/>
         </GroupBox>
 
     </Grid>

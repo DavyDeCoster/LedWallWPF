@@ -207,6 +207,8 @@ namespace LedWall
         {
             SendPlaylist();
             btnPlayPlaylist.IsEnabled = false;
+            btnShiftDown.IsEnabled = false;
+            btnShiftUp.IsEnabled = false;
         }
 
         private void SendPlaylist()
@@ -235,6 +237,8 @@ namespace LedWall
             ld.Stop = true;
             btnStop.IsEnabled = false;
             btnPlayPlaylist.IsEnabled = true;
+            btnShiftUp.IsEnabled = true;
+            btnShiftDown.IsEnabled = true;
         }
 
         private void txtName_TextChanged(object sender, TextChangedEventArgs e)
@@ -290,7 +294,7 @@ namespace LedWall
 
             while(startText>marginText)
             {
-                Bitmap bm = TxtToImage.ConvertTextToImage(text.ToUpper(), "Courier", 25, System.Drawing.Color.Black, System.Drawing.Color.White, width, height, startText, 0);
+                Bitmap bm = TxtToImage.ConvertTextToImage(text.ToUpper(), "Lucida Console", 25, System.Drawing.Color.Black, System.Drawing.Color.White, width, height, startText, 0);
                 string Path = _path + "Marquee\\" + text + i.ToString() + ".bmp";
                 bm.Save(Path);
                 startText -= 1;
@@ -321,7 +325,7 @@ namespace LedWall
                 height = 48;
             }
 
-            Bitmap bm = TxtToImage.ConvertTextToImage(text.ToUpper(), "Arial", 25, System.Drawing.Color.Black, System.Drawing.Color.White, width, height);
+            Bitmap bm = TxtToImage.ConvertTextToImage(text.ToUpper(), "Courier", 25, System.Drawing.Color.Black, System.Drawing.Color.White, width, height);
             string Path = _path + "Text\\" + text + ".bmp";
             bm.Save(Path);
 

@@ -28,6 +28,7 @@ namespace LedWall
         public bool Loop { get; set; }
         public bool Stop { get; set; }
 
+
         public Ledwall(int width, int height, SerialWriter[] Ports)
         {
             this.Height = height;
@@ -64,8 +65,15 @@ namespace LedWall
             int i = 0;
             foreach (SerialWriter s in Ports)
             {
+                int x = Convert.ToInt32(s.LedWidth * s.XOffset);
+                int y = Convert.ToInt32(s.LedHeight * s.YOffset);
+
+                int xWidth = Convert.ToInt32(s.WriterWidth * s.LedWidth);
+                int yHeight = Convert.ToInt32(s.WriterHeight * s.LedHeight);
+                
+                Size size = new Size(xWidth, yHeight);
                 var img = bm;
-                var rect = new Rectangle(new Point(0, 0), img.Size);
+                var rect = new Rectangle(new Point(x, y), size);
                 var cloned = new Bitmap(img).Clone(rect, img.PixelFormat);
                 var bitmap = new Bitmap(cloned, new Size(s.LedWidth, s.LedHeight));
 
@@ -122,16 +130,16 @@ namespace LedWall
                         pixel[i] = bm.GetPixel(x, y + (linesPerPin * i));
                         editedPixels[i] = colorWiring(pixel[i]);
                     }
-                }
 
-                for (mask = 0x800000; mask != 0; mask >>= 1)
-                {
-                    sbyte b = 0;
-                    for (int i = 0; i < 8; i++)
+                    for (mask = 0x800000; mask != 0; mask >>= 1)
                     {
-                        if ((editedPixels[i] & mask) != 0)
+                        sbyte b = 0;
+                        for (int i = 0; i < 8; i++)
                         {
-                            b |= (sbyte)(1 << i);
+                            if ((editedPixels[i] & mask) != 0)
+                            {
+                                b |= (sbyte)(1 << i);
+                            }
                         }
                         data[offset++] = b;
                     }
@@ -165,7 +173,6 @@ namespace LedWall
             FileVideoSource fvs = new FileVideoSource(path);
             fvs.NewFrame += fvs_NewFrame;
             fvs.Start();
-
         }
 
         private void fvs_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)

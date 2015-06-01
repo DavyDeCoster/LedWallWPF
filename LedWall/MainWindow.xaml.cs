@@ -200,7 +200,11 @@ namespace LedWall
                 lstFiles.Items.RemoveAt(index + 2);
 
                 lstFiles.SelectedIndex = index + 1;
+
+
             }
+
+
         }
 
         private void btnPlayPlaylist_Click(object sender, RoutedEventArgs e)
@@ -266,11 +270,11 @@ namespace LedWall
             }
             else
             {
-                SaveTextToMarquee();
+                SaveTextToMarquee(false);
             }
         }
 
-        private void SaveTextToMarquee()
+        private void SaveTextToMarquee(bool verticalIn)
         {
             string text = txtText.Text;
             int width;

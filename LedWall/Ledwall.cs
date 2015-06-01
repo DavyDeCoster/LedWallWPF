@@ -51,7 +51,17 @@ namespace LedWall
 
             Bitmap[] cropped = cropImagesWithSetting(bm);
 
-            SendProtocol(cropped);
+            SendProtocol(cropped, 25);
+        }
+
+        public void ReadImage(string path, int framerate)
+        {
+            Bitmap bmOriginal = new Bitmap(path);
+            Bitmap bm = new Bitmap(bmOriginal, Width, Height);
+
+            Bitmap[] cropped = cropImagesWithSetting(bm);
+
+            SendProtocol(cropped, framerate);
         }
 
         private void DefineData(Bitmap b)
@@ -84,12 +94,12 @@ namespace LedWall
             return cropped;
         }
 
-        private void AddIntroData(Boolean master)
+        private void AddIntroData(Boolean master, int framerate)
         {
             if (master)
             {
                 data[0] = (sbyte)System.Text.Encoding.ASCII.GetBytes("*")[0];
-                int usec = (int)((1000000.0 / 25) * 0.75);
+                int usec = (int)((1000000.0 / 50) * 0.75);
                 data[1] = (sbyte)(usec);   // request the frame sync pulse
                 data[2] = (sbyte)(usec >> 8); // at 75% of the frame time
                 return;
@@ -180,10 +190,10 @@ namespace LedWall
             Bitmap frame = new Bitmap(eventArgs.Frame, Width, Height);
 
             Bitmap[] cropped = cropImagesWithSetting(frame);
-            SendProtocol(cropped);
+            SendProtocol(cropped, 25);
         }
 
-        private void SendProtocol(Bitmap[] cropped)
+        private void SendProtocol(Bitmap[] cropped, int framerate)
         {
             int i = 0;
             bool master = true;
@@ -191,7 +201,7 @@ namespace LedWall
             {
                 DefineData(bm);
                 ReadPixelsFromImage(bm);
-                AddIntroData(master);
+                AddIntroData(master, framerate);
                 master = false;
                 Ports[i].data = data;
                 Thread SendThread = new Thread(new ThreadStart(Ports[i].SendData));
@@ -257,7 +267,7 @@ namespace LedWall
                     if (GetVideoLength(f.Path, out length))
                     {
                         ReadVideo(f.Path);
-                        Thread.Sleep(Convert.ToInt32(length * 1000));
+                        Thread.Sleep(Convert.ToInt32((length + f.Wait) * 1000));
                     }
                 }
                 else
@@ -266,13 +276,13 @@ namespace LedWall
                     {
                         foreach (File sf in f.Files)
                         {
-                            ReadImage(sf.Path);
+                            ReadImage(sf.Path, 50);
                         }
                     }
                     else
                     {
                         ReadImage(f.Path);
-                        Thread.Sleep(5000);
+                        Thread.Sleep(f.Wait * 1000);
                     }
                 }
 

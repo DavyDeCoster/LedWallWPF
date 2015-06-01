@@ -14,27 +14,25 @@ namespace LedWall
         public bool IsVideo { get; set; }
         public string Name { get; set; }
         public List<File> Files { get; set; }
+        public int Wait { get; set; }
 
         static string defaultPathVideo = AppDomain.CurrentDomain.BaseDirectory + "Video";
         static string defaultPathPicture = AppDomain.CurrentDomain.BaseDirectory + "Images";
         static string defaultPathSetting = AppDomain.CurrentDomain.BaseDirectory + "Settings//Files.csv";
 
         static readonly List<string> ImageExtensions = new List<string> { ".JPG", ".JPE", ".BMP", ".GIF", ".PNG" };
-        private string text;
-        private System.Drawing.Bitmap bitmap;
-        private bool p;
-
 
         public File()
         {
 
         }
 
-        public File(string Name, string Path, bool isVideo)
+        public File(string Name, string Path, bool isVideo, int wait)
         {
             this.Name = Name;
             this.Path = Path;
             this.IsVideo = isVideo;
+            this.Wait = wait;
         }
 
         public File(string Name, List<File> Files)
@@ -58,7 +56,22 @@ namespace LedWall
             sw.WriteLine("--------------------------------------------");
             foreach (File f in lstFiles)
             {
-                sw.WriteLine(f.Name + ";" + f.Path + ";" + f.IsVideo);
+                if(f.Path != null)
+                {
+                    sw.WriteLine(f.Name + ";" + f.Path + ";" + f.IsVideo + ";" + f.Wait);
+            
+                }
+                else
+                {
+                    sw.WriteLine("START MARQUEE");
+
+                    foreach (File s in f.Files)
+                    {
+                        sw.WriteLine(s.Name + ";" + s.Path + ";" + s.IsVideo + ";" + s.Wait);
+                    }
+
+                    sw.WriteLine("END MARQUEE");
+                }
             }
             sw.Close();
         }
@@ -76,14 +89,38 @@ namespace LedWall
 
                 while (s != null)
                 {
-                    string[] sSplit = s.Split(';');
-
-                    if (CheckPathForFile(sSplit[1]))
+                    if (s == "START MARQUEE")
                     {
-                        lstFiles.Add(new File(sSplit[0], sSplit[1], Convert.ToBoolean(sSplit[2])));
-                    }
+                        s = sr.ReadLine();
+                        File Marq = new File();
+                        Marq.Files = new List<File>();
+                        while (s != "END MARQUEE")
+                        {
+                            string[] sSplit = s.Split(';');
 
-                    s = sr.ReadLine();
+                            if (CheckPathForFile(sSplit[1]))
+                            {
+                                Marq.Files.Add(new File(sSplit[0], sSplit[1], Convert.ToBoolean(sSplit[2]), Convert.ToInt32(sSplit[3])));
+                            }
+
+                            Marq.Name = sSplit[0];
+
+                            s = sr.ReadLine();
+                        }
+                        lstFiles.Add(Marq);
+                        s = sr.ReadLine();
+                    }
+                    else
+                    {
+                        string[] sSplit = s.Split(';');
+
+                        if (CheckPathForFile(sSplit[1]))
+                        {
+                            lstFiles.Add(new File(sSplit[0], sSplit[1], Convert.ToBoolean(sSplit[2]), Convert.ToInt32(sSplit[3])));
+                        }
+
+                        s = sr.ReadLine();
+                    }
                 }
 
                 sr.Close();
@@ -108,13 +145,17 @@ namespace LedWall
 
         public override string ToString()
         {
-            if (this.IsVideo)
+            if(this.Path==null)
             {
-                return Name + " (Video)";
+                return Name + " (Marquee, " + this.Files[0].Wait + " sec)";
+            }
+            else if (this.IsVideo)
+            {
+                return Name + " (Video, "+Wait+" sec)";
             }
             else
             {
-                return Name + " (Picture)";
+                return Name + " (Picture, " + Wait + " sec)";
             }
         }
 

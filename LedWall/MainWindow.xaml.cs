@@ -76,7 +76,7 @@ namespace LedWall
                     SerialWriter sw = new SerialWriter(s);
                     if (sw.WriterHeight != 1)
                     {
-                        Height = sw.LedHeight;
+                        Height += Convert.ToInt32(sw.LedHeight*sw.WriterHeight);
                     }
                     else
                     {
@@ -84,7 +84,7 @@ namespace LedWall
                     }
                     if (sw.WriterWidth != 1)
                     {
-                        Width = sw.LedWidth;
+                        Width += Convert.ToInt32(sw.LedWidth * sw.WriterWidth);
                     }
                     else
                     {
@@ -117,7 +117,7 @@ namespace LedWall
 
         private void btnAddFile_Click(object sender, RoutedEventArgs e)
         {
-            File f = new File(txtName.Text, NewPath, File.CheckIfVideoOrPicture(NewPath));
+            File f = new File(txtName.Text, NewPath, File.CheckIfVideoOrPicture(NewPath), (int)slTime.Value);
             lstFiles.Items.Add(f);
 
             NewPath = "";
@@ -300,7 +300,7 @@ namespace LedWall
                 startText -= 1;
                 i++;
                 lstPaths.Add(Path);
-                File f = new File(text, Path, false);
+                File f = new File(text, Path, false, (int)slTimeText.Value);
                 lstFilesMarquee.Add(f);
             }
 
@@ -329,7 +329,7 @@ namespace LedWall
             string Path = _path + "Text\\" + text + ".bmp";
             bm.Save(Path);
 
-            File f = new File(text, Path, false);
+            File f = new File(text, Path, false, (int)slTimeText.Value);
             lstFiles.Items.Add(f);
 
             txtText.Text = "";

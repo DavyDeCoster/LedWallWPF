@@ -128,6 +128,10 @@ namespace LedWall
             catch (DirectoryNotFoundException)
             {
                 Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "Settings");
+                Directory.CreateDirectory(defaultPathPicture);
+                Directory.CreateDirectory(defaultPathVideo);
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "Text");
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "Marquee");
             }
             catch (FileNotFoundException)
             {

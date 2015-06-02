@@ -42,6 +42,7 @@ namespace LedWall
             GettingSerialports();
             btnStop.IsEnabled = false;
             EnableDisableAdd();
+            chkVerticalIn.IsEnabled = false;
         }
 
         private void FillingComboboxes()
@@ -97,7 +98,7 @@ namespace LedWall
             }
             else
             {
-                MessageBox.Show("No Serial Connection, you can only add files");
+                //MessageBox.Show("No Serial Connection, you can only add files");
                 btnPlayPlaylist.IsEnabled = false;
                 btnSendOne.IsEnabled = false;
             }
@@ -120,7 +121,7 @@ namespace LedWall
             File f = new File(txtName.Text, NewPath, File.CheckIfVideoOrPicture(NewPath), (int)slTime.Value);
             lstFiles.Items.Add(f);
 
-            NewPath = "";
+            NewPath = null;
             txtName.Text = "";
         }
 
@@ -268,13 +269,73 @@ namespace LedWall
             {
                 SaveTextToImage();
             }
+            else if((bool)chkVerticalIn.IsChecked)
+            {
+                SaveTextToMarqueeVertical();
+            }
             else
             {
-                SaveTextToMarquee(false);
+                SaveTextToMarquee();
             }
         }
 
-        private void SaveTextToMarquee(bool verticalIn)
+        private void SaveTextToMarqueeVertical()
+        {
+            string text = txtText.Text;
+            string[] splitText = text.Split(' ');
+            int width;
+            int height;
+            if (ld != null)
+            {
+                width = ld.Width;
+                height = ld.Height;
+            }
+            else
+            {
+                width = 107;
+                height = 48;
+            }
+
+            int marginText = height - 6;
+            int startText = -height + 18;
+            int i = 0;
+            int font;
+            List<string> lstPaths = new List<string>();
+            List<File> lstFilesMarquee = new List<File>();
+
+            foreach (string s in splitText)
+	        {
+                while(startText<marginText)
+                {
+                    if(s.Length > 4)
+                    {
+                        font = 107 / s.Length;
+                    }
+                    else
+                    {
+                        font = 25;
+                    }
+                    Bitmap bm = TxtToImage.ConvertTextToImage(s.ToUpper(), "Lucida Console", font, System.Drawing.Color.Black, System.Drawing.Color.White, width, height, 10, startText);
+                    string Path = _path + "Marquee\\" + text + i.ToString() + ".bmp";
+                    bm.Save(Path);
+                    if(i%2 == 1)
+                    {
+                        startText += 1;
+                    }
+                    i++;
+                    lstPaths.Add(Path);
+                    File f = new File(text, Path, false, (int)slTimeText.Value);
+                    lstFilesMarquee.Add(f);   
+                }
+                startText = -height;
+	        }
+
+            File fMarquee = new File(text, lstFilesMarquee);
+            lstFiles.Items.Add(fMarquee);
+            txtText.Text = "";
+        }
+
+        private void SaveTextToMarquee()
         {
             string text = txtText.Text;
             int width;
@@ -291,21 +352,21 @@ namespace LedWall
             }
 
             int marginText = -1*(1+text.Length * 25);
-            int startText = 100;
+            int startText = +100;
             int i = 0;
             List<string> lstPaths = new List<string>();
             List<File> lstFilesMarquee = new List<File>();
 
             while(startText>marginText)
             {
-                Bitmap bm = TxtToImage.ConvertTextToImage(text.ToUpper(), "Lucida Console", 25, System.Drawing.Color.Black, System.Drawing.Color.White, width, height, startText, 0);
-                string Path = _path + "Marquee\\" + text + i.ToString() + ".bmp";
-                bm.Save(Path);
+                Bitmap bm2 = TxtToImage.ConvertTextToImage(text.ToUpper(), "Lucida Console", 25, System.Drawing.Color.Black, System.Drawing.Color.White, width, height, startText, 5);
+                string Path2 = _path + "Marquee\\" + text + i.ToString() + ".bmp";
+                bm2.Save(Path2);
                 startText -= 1;
                 i++;
-                lstPaths.Add(Path);
-                File f = new File(text, Path, false, (int)slTimeText.Value);
-                lstFilesMarquee.Add(f);
+                lstPaths.Add(Path2);
+                File ff = new File(text, Path2, false, (int)slTimeText.Value);
+                lstFilesMarquee.Add(ff);
             }
 
             File fMarquee = new File(text, lstFilesMarquee);
@@ -329,7 +390,18 @@ namespace LedWall
                 height = 48;
             }
 
-            Bitmap bm = TxtToImage.ConvertTextToImage(text.ToUpper(), "Courier", 25, System.Drawing.Color.Black, System.Drawing.Color.White, width, height);
+            int font;
+
+            if (text.Length > 4)
+            {
+                font = 107 / text.Length;
+            }
+            else
+            {
+                font = 25;
+            }
+
+            Bitmap bm = TxtToImage.ConvertTextToImage(text.ToUpper(), "Courier", font, System.Drawing.Color.Black, System.Drawing.Color.White, width, height, 5 , 0);
             string Path = _path + "Text\\" + text + ".bmp";
             bm.Save(Path);
 
@@ -347,6 +419,24 @@ namespace LedWall
         private void chkLoop_Unchecked(object sender, RoutedEventArgs e)
         {
             ld.Loop = false;
+        }
+
+        private void txtText_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (txtText.Text.Length > 7)
+            {
+                chkMarquee.IsChecked = true;
+            }
+        }
+
+        private void chkMarquee_Checked(object sender, RoutedEventArgs e)
+        {
+            chkVerticalIn.IsEnabled = true;
+        }
+
+        private void chkMarquee_Unchecked(object sender, RoutedEventArgs e)
+        {
+            chkVerticalIn.IsEnabled = false;
         }
     }
 }

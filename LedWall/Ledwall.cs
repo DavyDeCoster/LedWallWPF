@@ -27,6 +27,7 @@ namespace LedWall
         public List<File> Playlist { get; set; }
         public bool Loop { get; set; }
         public bool Stop { get; set; }
+        public double Intensity { get; set; }
 
 
         public Ledwall(int width, int height, SerialWriter[] Ports)
@@ -171,9 +172,9 @@ namespace LedWall
             int green = color.G;
             int blue = color.B;
 
-            red = gammatable[red];
-            green = gammatable[green];
-            blue = gammatable[blue];
+            red = gammatable[Convert.ToInt32(red * Intensity)];
+            green = gammatable[Convert.ToInt32(green * Intensity)];
+            blue = gammatable[Convert.ToInt32(blue * Intensity)];
 
             return ((green << 16) | (red << 8) | (blue));
         }

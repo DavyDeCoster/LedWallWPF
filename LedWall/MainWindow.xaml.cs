@@ -43,6 +43,10 @@ namespace LedWall
             btnStop.IsEnabled = false;
             EnableDisableAdd();
             chkVerticalIn.IsEnabled = false;
+            btnDeleteFile.IsEnabled = false;
+            btnSendOne.IsEnabled = false;
+            btnShiftDown.IsEnabled = false;
+            btnShiftUp.IsEnabled = false;
         }
 
         private void FillingComboboxes()
@@ -95,12 +99,15 @@ namespace LedWall
                     i++;
                 }
                 ld = new Ledwall(Width, Height, Ports);
+                chkLoop.IsEnabled = true;
+                ld.Intensity = 1;
             }
             else
             {
                 //MessageBox.Show("No Serial Connection, you can only add files");
                 btnPlayPlaylist.IsEnabled = false;
                 btnSendOne.IsEnabled = false;
+                chkLoop.IsEnabled = false;
             }
         }
 
@@ -123,6 +130,11 @@ namespace LedWall
 
             NewPath = null;
             txtName.Text = "";
+            
+            if(ld != null)
+            {
+                btnPlayPlaylist.IsEnabled = true;
+            }
         }
 
         private void btnOpen_Click(object sender, RoutedEventArgs e)
@@ -201,8 +213,6 @@ namespace LedWall
                 lstFiles.Items.RemoveAt(index + 2);
 
                 lstFiles.SelectedIndex = index + 1;
-
-
             }
 
 
@@ -242,8 +252,11 @@ namespace LedWall
             ld.Stop = true;
             btnStop.IsEnabled = false;
             btnPlayPlaylist.IsEnabled = true;
-            btnShiftUp.IsEnabled = true;
-            btnShiftDown.IsEnabled = true;
+            if(lstFiles.Items.Count > 0 && lstFiles.SelectedIndex != -1)
+            {
+                btnShiftUp.IsEnabled = true;
+                btnShiftDown.IsEnabled = true;
+            }
         }
 
         private void txtName_TextChanged(object sender, TextChangedEventArgs e)
@@ -437,6 +450,35 @@ namespace LedWall
         private void chkMarquee_Unchecked(object sender, RoutedEventArgs e)
         {
             chkVerticalIn.IsEnabled = false;
+        }
+
+        private void lstFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(lstFiles.SelectedIndex!=-1)
+            {
+                if(ld != null)
+                {
+                    btnSendOne.IsEnabled = true;
+                }
+                btnDeleteFile.IsEnabled = true;
+                btnShiftUp.IsEnabled = true;
+                btnShiftDown.IsEnabled = true;
+            }
+            else
+            {
+                btnDeleteFile.IsEnabled = false;
+                btnSendOne.IsEnabled = false;
+                btnShiftUp.IsEnabled = false;
+                btnShiftDown.IsEnabled = false;
+            }
+        }
+
+        private void slIntensity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(ld!= null)
+            {
+                ld.Intensity = (double)slIntensity.Value/100;
+            }
         }
     }
 }

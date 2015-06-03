@@ -65,11 +65,6 @@ namespace LedWall
 
             if (sp.Length != 0)
             {
-                foreach (string s in sp)
-                {
-                    Console.WriteLine(s);
-                }
-
                 SerialWriter[] Ports = SerialWriter.InitializeArray<SerialWriter>(sp.Length);
 
                 int Height = 0;

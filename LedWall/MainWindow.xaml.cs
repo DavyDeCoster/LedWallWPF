@@ -47,6 +47,7 @@ namespace LedWall
             btnSendOne.IsEnabled = false;
             btnShiftDown.IsEnabled = false;
             btnShiftUp.IsEnabled = false;
+            btnAddText.IsEnabled = false;
         }
 
         private void FillingComboboxes()
@@ -120,7 +121,7 @@ namespace LedWall
 
         private void btnAddFile_Click(object sender, RoutedEventArgs e)
         {
-            File f = new File(txtName.Text, NewPath, File.CheckIfVideoOrPicture(NewPath), (int)slTime.Value);
+            File f = new File(txtName.Text, NewPath, File.CheckIfVideoOrPicture(NewPath), (int)slTime.Value, Convert.ToDouble(txtFamerate.Text));
             lstFiles.Items.Add(f);
 
             NewPath = null;
@@ -146,11 +147,11 @@ namespace LedWall
             {
                 if (f.IsVideo)
                 {
-                    ld.ReadVideo(f.Path);
+                    ld.ReadVideo(f.Path, f.Framerate);
                 }
                 else
                 {
-                    ld.ReadImage(f.Path);
+                    ld.ReadImage(f.Path, 50);
                 }
             }
 
@@ -261,7 +262,7 @@ namespace LedWall
 
         private void EnableDisableAdd()
         {
-            if (txtName.Text == "" || NewPath == null)
+            if (txtName.Text == "" || NewPath == null || txtFamerate.Text == "")
             {
                 btnAddFile.IsEnabled = false;
             }
@@ -324,7 +325,7 @@ namespace LedWall
                         font = 25;
                     }
                     Bitmap bm = TxtToImage.ConvertTextToImage(s.ToUpper(), "Lucida Console", font, System.Drawing.Color.Black, System.Drawing.Color.White, width, height, 10, startText);
-                    string Path = _path + "Marquee\\" + text + i.ToString() + ".bmp";
+                    string Path = _path + "Marquee\\" + File.RemoveSpecialCharacters(text) + i.ToString() + ".bmp";
                     bm.Save(Path);
                     if(i%2 == 1)
                     {
@@ -332,7 +333,7 @@ namespace LedWall
                     }
                     i++;
                     lstPaths.Add(Path);
-                    File f = new File(text, Path, false, (int)slTimeText.Value);
+                    File f = new File(text, Path, false, (int)slTimeText.Value, 25);
                     lstFilesMarquee.Add(f);   
                 }
                 startText = -height;
@@ -368,12 +369,12 @@ namespace LedWall
             while(startText>marginText)
             {
                 Bitmap bm2 = TxtToImage.ConvertTextToImage(text.ToUpper(), "Lucida Console", 25, System.Drawing.Color.Black, System.Drawing.Color.White, width, height, startText, 5);
-                string Path2 = _path + "Marquee\\" + text + i.ToString() + ".bmp";
+                string Path2 = _path + "Marquee\\" + File.RemoveSpecialCharacters(text) + i.ToString() + ".bmp";
                 bm2.Save(Path2);
                 startText -= 1;
                 i++;
                 lstPaths.Add(Path2);
-                File ff = new File(text, Path2, false, (int)slTimeText.Value);
+                File ff = new File(text, Path2, false, (int)slTimeText.Value, 50);
                 lstFilesMarquee.Add(ff);
             }
 
@@ -410,10 +411,10 @@ namespace LedWall
             }
 
             Bitmap bm = TxtToImage.ConvertTextToImage(text.ToUpper(), "Courier", font, System.Drawing.Color.Black, System.Drawing.Color.White, width, height, 5 , 0);
-            string Path = _path + "Text\\" + text + ".bmp";
+            string Path = _path + "Text\\" + File.RemoveSpecialCharacters(text) + ".bmp";
             bm.Save(Path);
 
-            File f = new File(text, Path, false, (int)slTimeText.Value);
+            File f = new File(text, Path, false, (int)slTimeText.Value, 50);
             lstFiles.Items.Add(f);
 
             txtText.Text = "";
@@ -434,6 +435,15 @@ namespace LedWall
             if (txtText.Text.Length > 7)
             {
                 chkMarquee.IsChecked = true;
+            }
+
+            if(txtText.Text.Length>0)
+            {
+                btnAddText.IsEnabled = true;
+            }
+            else
+            {
+                btnAddText.IsEnabled = false;
             }
         }
 

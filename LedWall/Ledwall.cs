@@ -28,6 +28,7 @@ namespace LedWall
         public bool Loop { get; set; }
         public bool Stop { get; set; }
         public double Intensity { get; set; }
+        public double FrameRate { get; set; }
 
 
         public Ledwall(int width, int height, SerialWriter[] Ports)
@@ -42,7 +43,6 @@ namespace LedWall
 
         public Ledwall()
         {
-
         }
 
         public void ReadImage(string path)
@@ -100,7 +100,7 @@ namespace LedWall
             if (master)
             {
                 data[0] = (sbyte)System.Text.Encoding.ASCII.GetBytes("*")[0];
-                int usec = (int)((1000000.0 / 50) * 0.75);
+                int usec = (int)((1000000.0 / framerate) * 0.75);
                 data[1] = (sbyte)(usec);   // request the frame sync pulse
                 data[2] = (sbyte)(usec >> 8); // at 75% of the frame time
                 return;
@@ -179,11 +179,15 @@ namespace LedWall
             return ((green << 16) | (red << 8) | (blue));
         }
 
-        public void ReadVideo(string path)
+        public void ReadVideo(string path, double frameRate)
         {
             FileVideoSource fvs = new FileVideoSource(path);
+
+            FrameRate = frameRate;
+             
             fvs.NewFrame += fvs_NewFrame;
             fvs.Start();
+
         }
 
         private void fvs_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
@@ -264,10 +268,10 @@ namespace LedWall
                 File f = Playlist[i];
                 if (f.IsVideo)
                 {
-                    double length;
-                    if (GetVideoLength(f.Path, out length))
+                    double length, rate;
+                    if (GetVideoLength(f.Path, out length, out rate))
                     {
-                        ReadVideo(f.Path);
+                        ReadVideo(f.Path, f.Framerate);
                         Thread.Sleep(Convert.ToInt32((length + f.Wait) * 1000));
                     }
                 }
@@ -282,7 +286,7 @@ namespace LedWall
                     }
                     else
                     {
-                        ReadImage(f.Path);
+                        ReadImage(f.Path, 50);
                         Thread.Sleep(f.Wait * 1000);
                     }
                 }
@@ -298,12 +302,13 @@ namespace LedWall
             }
         }
 
-        static public bool GetVideoLength(string fileName, out double length)
+        static public bool GetVideoLength(string fileName, out double length, out double rate)
         {
             DirectShowLib.FilterGraph graphFilter = new DirectShowLib.FilterGraph();
             DirectShowLib.IGraphBuilder graphBuilder;
             DirectShowLib.IMediaPosition mediaPos;
             length = 0.0;
+            rate = 0;
 
             try
             {

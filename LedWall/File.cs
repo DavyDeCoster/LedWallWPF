@@ -15,6 +15,7 @@ namespace LedWall
         public string Name { get; set; }
         public List<File> Files { get; set; }
         public int Wait { get; set; }
+        public double Framerate { get; set; }
 
         static string defaultPathVideo = AppDomain.CurrentDomain.BaseDirectory + "Video";
         static string defaultPathPicture = AppDomain.CurrentDomain.BaseDirectory + "Images";
@@ -27,12 +28,13 @@ namespace LedWall
 
         }
 
-        public File(string Name, string Path, bool isVideo, int wait)
+        public File(string Name, string Path, bool isVideo, int wait, double framerate)
         {
             this.Name = Name;
             this.Path = Path;
             this.IsVideo = isVideo;
             this.Wait = wait;
+            this.Framerate = framerate;
         }
 
         public File(string Name, List<File> Files)
@@ -58,7 +60,7 @@ namespace LedWall
             {
                 if(f.Path != null)
                 {
-                    sw.WriteLine(f.Name + ";" + f.Path + ";" + f.IsVideo + ";" + f.Wait);
+                    sw.WriteLine(f.Name + ";" + f.Path + ";" + f.IsVideo + ";" + f.Wait + ";" + f.Framerate);
             
                 }
                 else
@@ -67,7 +69,7 @@ namespace LedWall
 
                     foreach (File s in f.Files)
                     {
-                        sw.WriteLine(s.Name + ";" + s.Path + ";" + s.IsVideo + ";" + s.Wait);
+                        sw.WriteLine(s.Name + ";" + s.Path + ";" + s.IsVideo + ";" + s.Wait + ";" + s.Framerate);
                     }
 
                     sw.WriteLine("END MARQUEE");
@@ -100,7 +102,7 @@ namespace LedWall
 
                             if (CheckPathForFile(sSplit[1]))
                             {
-                                Marq.Files.Add(new File(sSplit[0], sSplit[1], Convert.ToBoolean(sSplit[2]), Convert.ToInt32(sSplit[3])));
+                                Marq.Files.Add(new File(sSplit[0], sSplit[1], Convert.ToBoolean(sSplit[2]), Convert.ToInt32(sSplit[3]), Convert.ToDouble(sSplit[4])));
                             }
 
                             Marq.Name = sSplit[0];
@@ -116,7 +118,7 @@ namespace LedWall
 
                         if (CheckPathForFile(sSplit[1]))
                         {
-                            lstFiles.Add(new File(sSplit[0], sSplit[1], Convert.ToBoolean(sSplit[2]), Convert.ToInt32(sSplit[3])));
+                            lstFiles.Add(new File(sSplit[0], sSplit[1], Convert.ToBoolean(sSplit[2]), Convert.ToInt32(sSplit[3]), Convert.ToDouble(sSplit[4])));
                         }
 
                         s = sr.ReadLine();
@@ -229,6 +231,19 @@ namespace LedWall
                     System.IO.File.Delete(f.Path);
                 }
             }
+        }
+
+        public static string RemoveSpecialCharacters(string str)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in str)
+            {
+                if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '.' || c == '_')
+                {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString();
         }
     }
 }

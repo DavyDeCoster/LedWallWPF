@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -77,7 +78,7 @@ namespace LedWall
                     SerialWriter sw = new SerialWriter(s);
                     if (sw.WriterHeight != 1)
                     {
-                        Height += Convert.ToInt32(sw.LedHeight*sw.WriterHeight);
+                        Height += Convert.ToInt32(sw.LedHeight * sw.WriterHeight);
                     }
                     else
                     {
@@ -126,8 +127,8 @@ namespace LedWall
 
             NewPath = null;
             txtName.Text = "";
-            
-            if(ld != null)
+
+            if (ld != null)
             {
                 btnPlayPlaylist.IsEnabled = true;
             }
@@ -143,7 +144,7 @@ namespace LedWall
         {
             File f = (File)lstFiles.SelectedItem;
 
-            if(f.Files==null)
+            if (f.Files == null)
             {
                 if (f.IsVideo)
                 {
@@ -248,7 +249,7 @@ namespace LedWall
             ld.Stop = true;
             btnStop.IsEnabled = false;
             btnPlayPlaylist.IsEnabled = true;
-            if(lstFiles.Items.Count > 0 && lstFiles.SelectedIndex != -1)
+            if (lstFiles.Items.Count > 0 && lstFiles.SelectedIndex != -1)
             {
                 btnShiftUp.IsEnabled = true;
                 btnShiftDown.IsEnabled = true;
@@ -274,11 +275,11 @@ namespace LedWall
 
         private void btnAddText_Click(object sender, RoutedEventArgs e)
         {
-            if(!(bool)chkMarquee.IsChecked)
+            if (!(bool)chkMarquee.IsChecked)
             {
                 SaveTextToImage();
             }
-            else if((bool)chkVerticalIn.IsChecked)
+            else if ((bool)chkVerticalIn.IsChecked)
             {
                 SaveTextToMarqueeVertical();
             }
@@ -313,10 +314,10 @@ namespace LedWall
             List<File> lstFilesMarquee = new List<File>();
 
             foreach (string s in splitText)
-	        {
-                while(startText<marginText)
+            {
+                while (startText < marginText)
                 {
-                    if(s.Length > 4)
+                    if (s.Length > 4)
                     {
                         font = 107 / s.Length;
                     }
@@ -325,19 +326,20 @@ namespace LedWall
                         font = 25;
                     }
                     Bitmap bm = TxtToImage.ConvertTextToImage(s.ToUpper(), "Lucida Console", font, System.Drawing.Color.Black, System.Drawing.Color.White, width, height, 10, startText);
-                    string Path = _path + "Marquee\\" + File.RemoveSpecialCharacters(text) + i.ToString() + ".bmp";
+                    string LimitedString = text.Substring(0, 10);
+                    string Path = _path + "Marquee\\" + File.RemoveSpecialCharacters(LimitedString) + i.ToString() + ".bmp";
                     bm.Save(Path);
-                    if(i%2 == 1)
+                    if (i % 2 == 1)
                     {
                         startText += 1;
                     }
                     i++;
                     lstPaths.Add(Path);
                     File f = new File(text, Path, false, (int)slTimeText.Value, 25);
-                    lstFilesMarquee.Add(f);   
+                    lstFilesMarquee.Add(f);
                 }
                 startText = -height;
-	        }
+            }
 
             File fMarquee = new File(text, lstFilesMarquee);
             lstFiles.Items.Add(fMarquee);
@@ -360,16 +362,17 @@ namespace LedWall
                 height = 48;
             }
 
-            int marginText = -1*(1+text.Length * 25);
+            int marginText = -1 * (1 + text.Length * 25);
             int startText = +100;
             int i = 0;
             List<string> lstPaths = new List<string>();
             List<File> lstFilesMarquee = new List<File>();
 
-            while(startText>marginText)
+            while (startText > marginText)
             {
                 Bitmap bm2 = TxtToImage.ConvertTextToImage(text.ToUpper(), "Lucida Console", 25, System.Drawing.Color.Black, System.Drawing.Color.White, width, height, startText, 5);
-                string Path2 = _path + "Marquee\\" + File.RemoveSpecialCharacters(text) + i.ToString() + ".bmp";
+                string LimitedString = text.Substring(0, 10);
+                string Path2 = _path + "Marquee\\" + File.RemoveSpecialCharacters(LimitedString) + i.ToString() + ".bmp";
                 bm2.Save(Path2);
                 startText -= 1;
                 i++;
@@ -410,8 +413,9 @@ namespace LedWall
                 font = 25;
             }
 
-            Bitmap bm = TxtToImage.ConvertTextToImage(text.ToUpper(), "Courier", font, System.Drawing.Color.Black, System.Drawing.Color.White, width, height, 5 , 0);
-            string Path = _path + "Text\\" + File.RemoveSpecialCharacters(text) + ".bmp";
+            Bitmap bm = TxtToImage.ConvertTextToImage(text.ToUpper(), "Courier", font, System.Drawing.Color.Black, System.Drawing.Color.White, width, height, 5, 0);
+            string LimitedString = text.Substring(0, 7);
+            string Path = _path + "Text\\" + File.RemoveSpecialCharacters(LimitedString) + ".bmp";
             bm.Save(Path);
 
             File f = new File(text, Path, false, (int)slTimeText.Value, 50);
@@ -437,7 +441,7 @@ namespace LedWall
                 chkMarquee.IsChecked = true;
             }
 
-            if(txtText.Text.Length>0)
+            if (txtText.Text.Length > 0)
             {
                 btnAddText.IsEnabled = true;
             }
@@ -459,9 +463,9 @@ namespace LedWall
 
         private void lstFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(lstFiles.SelectedIndex!=-1)
+            if (lstFiles.SelectedIndex != -1)
             {
-                if(ld != null)
+                if (ld != null)
                 {
                     btnSendOne.IsEnabled = true;
                 }
@@ -480,9 +484,9 @@ namespace LedWall
 
         private void slIntensity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if(ld!= null)
+            if (ld != null)
             {
-                ld.Intensity = (double)slIntensity.Value/100;
+                ld.Intensity = (double)slIntensity.Value / 100;
             }
         }
     }

@@ -500,6 +500,7 @@ namespace LedWall
             {
                 int len = txtFamerate.Text.Length;
                 txtFamerate.Text = txtFamerate.Text.Substring(0, len - 1);
+                txtFamerate.Select(len, 0);
             }
         }
     }

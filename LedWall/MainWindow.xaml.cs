@@ -449,6 +449,7 @@ namespace LedWall
             {
                 btnAddText.IsEnabled = false;
             }
+            
         }
 
         private void chkMarquee_Checked(object sender, RoutedEventArgs e)
@@ -487,6 +488,18 @@ namespace LedWall
             if (ld != null)
             {
                 ld.Intensity = (double)slIntensity.Value / 100;
+            }
+        }
+
+        private void txtFamerate_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            int number;
+            bool isNumber = int.TryParse(txtFamerate.Text, out number);
+
+            if(!isNumber)
+            {
+                int len = txtFamerate.Text.Length;
+                txtFamerate.Text = txtFamerate.Text.Substring(0, len - 1);
             }
         }
     }

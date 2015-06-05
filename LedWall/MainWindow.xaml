@@ -38,7 +38,7 @@
                 <TextBlock x:Name="lblTime" HorizontalAlignment="Right" Margin="0,7,0,10" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Center" Height="16" Width="29" TextAlignment="Right"><Run Text="Time"/><Run Text=":"/></TextBlock>
                 <Slider x:Name="slTime" Grid.Column="1" HorizontalAlignment="Left" Margin="10,7,0,0" Grid.Row="2" VerticalAlignment="Top" Width="220" SmallChange="1" Minimum="1" Maximum="15" TickPlacement="BottomRight" AutoToolTipPlacement="BottomRight" Value="5" IsSnapToTickEnabled="True" Height="24"/>
                 <TextBlock x:Name="lblName_Copy" HorizontalAlignment="Right" Margin="0,10,0,6" TextWrapping="Wrap" VerticalAlignment="Center" Height="16" Width="60" TextAlignment="Right" Grid.Row="3"><Run Text="Framerate"/><Run Text=":"/></TextBlock>
-                <TextBox x:Name="txtFamerate" Grid.Column="1" HorizontalAlignment="Left" Height="18" Margin="10,8,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="220" TextChanged="txtName_TextChanged" Grid.Row="3" Text="25"/>
+                <TextBox x:Name="txtFamerate" Grid.Column="1" HorizontalAlignment="Left" Height="18" Margin="10,8,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="220" TextChanged="txtFamerate_TextChanged" Grid.Row="3" Text="25"/>
             </Grid>
         </GroupBox>
         <Button x:Name="btnSendOne" Content="Send one" HorizontalAlignment="Left" Height="28" Margin="10,8,0,0" Grid.Row="2" VerticalAlignment="Top" Width="59" Click="btnSendOne_Click"/>
